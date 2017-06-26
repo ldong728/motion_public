@@ -297,5 +297,8 @@ function ajaxCreateNewMotion(){
 function create_motion(){
 //    include_once 'upload.php';
 mylog(getArrayInf($_POST));
+    $category=$_SESSION['userLogin']['category'];
+
+
 
 }

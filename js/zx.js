@@ -32,8 +32,10 @@ $(document).ready(function(){
 		$('.popup2').show();
 	});
 	$(document).on('click','.mask',function(){
+        $('.target-value-selecter').removeClass('target-value-selecter');
 		$('.popup').hide();
-	})
+	});
+
 	
 });
 
@@ -67,7 +69,7 @@ $(document).on('click', '.target-select', function () {
             var hidden = v1.list ? 'style="display:none"' : '';
             listContent += v1.list ? '<div class="nav-tab"><h2 class="main-category"><i class="icon icon-chevron-right"></i>' + v1.name + '</h2>' : '<div class="nav-tab">';
             $.each(value1, function (k2, v2) {
-                var icon=v2.sub?'+':'-';
+                var icon=v2.sub?'-':'.';
                 listContent += '<ul ' + hidden + '><li class="li-1 clearfix">' +
                 '<button class="btn-1 main-candidate-btn li-btn-all b-fir" type="button">'+icon+'</button>' +
                 '<input class="checkbox candidate super" type="checkbox" name="checkbox-lv1" value="' + v2.id + '">' +
@@ -253,3 +255,7 @@ function getTargetList(target, filter, callback) {
     //alert('getTarget');
     ajaxPost('ajaxTargetList', {target: target, filter: sFilter}, callback)
 }
+
+
+
+

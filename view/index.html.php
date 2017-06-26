@@ -3,6 +3,7 @@
 <script type="text/javascript" src="js/index.js?v=<?php echo rand(10, 1000) ?>"></script>
 <!--<script type="text/javascript" src="js/table.js?v=--><?php //echo rand(10,1000)?><!--"></script>-->
 <script type="text/javascript" src="js/zx.js?v=<?php echo rand(10, 1000) ?>"></script>
+<script type="text/javascript" src="js/laydate.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="css/main.css?v=<?php echo rand(1000, 9999) ?>">
 <header class="header">
     <div class="header-l"><img src="images/logo.png" alt="logo"></div>
@@ -126,7 +127,7 @@
                     </tr>
                     <tr>
                         <td>附议期限</td>
-                        <td><input type="text" name="date" class="date-input" value="2017-02-28 10：28">
+                        <td><input type="text" id="date-selector" name="date" class="date-input" value="2017-02-28 10：28">
                             <button type="button" class="date-btn"></button>
                             <br><span class="red">其他委员可以在附议期限之前附议次提案</span></td>
                         <td>希望承办单位</td>
@@ -145,19 +146,14 @@
                     </tr>
                     </tbody>
             </table>
+                <input type="hidden" id="need-partner" name="need-partner" value="0">
             </form>
         </div>
         <div class="refer">
             <button type="button" class="close-popup-js" value="返回">返回</button>
             <button type="button" value="提交" class="submit">立即提交</button>
-            <button type="button" value="征集复议">征集复议</button>
+            <button type="button" class="get-partner" value="征集附议">征集附议</button>
         </div>
-        <script>
-            $('.submit').click(function(){
-                $('.create-form').submit();
-//                console.log('ok');
-            })
-        </script>
         <div class="mo-footer">
             <p class="red">立即提交： 将您提出的提案提交到提案委</p>
 
@@ -273,117 +269,6 @@
                                                            value="23">
                                                     <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
                                                     <span class="span-1 candidate-name">毛玲洁</span></li>
-                                                <li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="nav-tab">
-                                    <h2>按组委<i class="icon icon-chevron-right"></i></h2>
-                                    <ul>
-                                        <li class="li-1 clearfix">
-                                            <button class="btn-1 main-candidate-btn li-btn-all b-fir" type="button">+</button>
-                                            <input class="checkbox candidate super li-btn-all" type="checkbox" name="checkbox-lv1"
-                                                   value="778">
-                                            <button class="btn-2 li-btn-all b-sec" type="button"></button>
-                                            <span class="span-1 candidate-name">农业农村组联络委</span></li>
-                                        <li class="li-2">
-                                            <ul>
-                                                <li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li>
-                                                <li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                    <ul>
-                                        <li class="li-1 clearfix">
-                                            <button class="btn-1 main-candidate-btn li-btn-all b-fir" type="button">+</button>
-                                            <input class="checkbox candidate super li-btn-all" type="checkbox" name="checkbox-lv1"
-                                                   value="778">
-                                            <button class="btn-2 li-btn-all b-sec" type="button"></button>
-                                            <span class="span-1 candidate-name">农业农村组联络委</span></li>
-                                        <li class="li-2">
-                                            <ul>
-                                                <li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li>
-                                                <li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li><li class="li-lv2 main-candidate clearfix">
-                                                    <button class="btn-lv2-1 li-btn-all b-thi" type="button"></button>
-                                                    <input class="checkbox candidate sub li-btn-all" type="checkbox"
-                                                           name="checkbox-lv2"
-                                                           value="23">
-                                                    <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li>
-
 
                                             </ul>
                                         </li>
@@ -404,9 +289,21 @@
         </div>
     </div>
 </div>
-</div>
 
 </body>
+<script>
+    laydate({
+        elem:'#date-selector'
+    });
+    $('.submit').click(function(){
+        $('.create-form').submit();
+    });
+
+    $('.get-partner').click(function(){
+        $('#need-partner').val(1);
+        $('.create-form').submit();
+    });
+</script>
 <script>
     var user = eval('(' + '<?php echo json_encode($_SESSION['userLogin'])?>' + ')');
 </script>
