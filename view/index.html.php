@@ -146,7 +146,7 @@
                     </tr>
                     </tbody>
             </table>
-                <input type="hidden" id="need-partner" name="need-partner" value="0">
+                <input type="hidden" id="need-partner" name="need-partner" value="1">
             </form>
         </div>
         <div class="refer">
@@ -300,7 +300,7 @@
     });
 
     $('.get-partner').click(function(){
-        $('#need-partner').val(1);
+        $('#need-partner').val(0);
         $('.create-form').submit();
     });
 </script>

@@ -295,9 +295,26 @@ function ajaxCreateNewMotion(){
 }
 
 function create_motion(){
-//    include_once 'upload.php';
-mylog(getArrayInf($_POST));
+    include_once 'includes/upload.class.php';
+    mylog(getArrayInf($_POST));
+    if(isset($_FILES['attachment-file'])&&$_FILES['attachment-file']['tmp_name']){
+        $uploader=new uploader();
+        $uploader->upFile(md5_file($_FILES['attachment-file']['tmp_name']));
+        $fileInf=$uploader->getFileInfo();
+//        mylog(getArrayInf($uploader->getFileInfo()));
+    }else{
+        return;
+    }
     $category=$_SESSION['userLogin']['category'];
+    $motionTemplate=$category;
+    $publicId=pdoInsert('motion_tbl',array('motion_name'=>$_POST['motion_title'],'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf.url,'step'=>$_POST['need-partner']));
+    if(1==$category){
+
+
+    }else{
+
+
+    }
 
 
 

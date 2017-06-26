@@ -10,7 +10,7 @@
 //wxlog('include uploadClass ok');
 define('filePath','files');
 define('maxSize',2000);
-define('FILE_FIELD','file-up');
+define('FILE_FIELD','attachment-file');
 class uploader
 {
     private $md5;

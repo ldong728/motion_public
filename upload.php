@@ -7,7 +7,7 @@
  */
 include_once 'includePackage.php';
 include_once $mypath . '/includes/upload.class.php';
-session_start();
+//session_start();
 //mylog(getArrayInf($_SESSION));
 //mylog(getArrayInf($_GET));
 if(isset($_SESSION['staffLogin'])&&$_SESSION['staffLogin']['currentMotion']){
