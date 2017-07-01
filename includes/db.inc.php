@@ -80,7 +80,7 @@ function pdoQuery($tableName, $fields, $where, $append)
         $sql=$sql.' '.trim($append);
     }
     try {
-//        mylog('query:'.$sql);
+        mylog('query:'.$sql);
         $query = $GLOBALS['pdo']->query($sql);
         return $query;
     }catch (PDOException $e) {
@@ -140,7 +140,9 @@ function pdoInsert($tableName,$value,$str=''){
 //        $error = 'Unable to insert to the database server.' . $e->getMessage();
 //        return $error;
 //        exit();
+
         throw $e;
+        return 0;
     }
 
 }

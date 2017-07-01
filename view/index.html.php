@@ -1,7 +1,11 @@
+<?php $motion_type=1==$_SESSION['userLogin']['category']?'建议/议案':'<?php echo $motion_type?>'?>
 <body>
+<script>
+    var user = eval('(' + '<?php echo json_encode($_SESSION['userLogin'])?>' + ')');
+</script>
 <script type="text/javascript" src="js/main.js?v=<?php echo rand(10, 1000) ?>"></script>
 <script type="text/javascript" src="js/index.js?v=<?php echo rand(10, 1000) ?>"></script>
-<!--<script type="text/javascript" src="js/table.js?v=--><?php //echo rand(10,1000)?><!--"></script>-->
+<script type="text/javascript" src="js/edit_motion.js?v=<?php echo rand(10,1000)?>"></script>
 <script type="text/javascript" src="js/zx.js?v=<?php echo rand(10, 1000) ?>"></script>
 <script type="text/javascript" src="js/laydate.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="css/main.css?v=<?php echo rand(1000, 9999) ?>">
@@ -14,11 +18,12 @@
 </header>
 <nav class="home-nav">
     <ul class="clearfix">
-        <li id="li1"><a href="#">我要提提案</a></li>
+        <li id="li1"><a href="#">我要提<?php echo $motion_type?></a></li>
         <li id="li2"><a href="#">个人信息</a></li>
-        <li class="li-cur"><a href="#">历届历次</a></li>
-        <li><a href="#">提案线索</a></li>
-        <li class="li5"><a href="#">十三届三次会议<br>百件提案汇编</a></li>
+        <li id="li3"><a href="#">历届历次</a></li>
+        <li id="li4"><a href="#"><?php echo $motion_type?>线索</a></li>
+        <li class="li7"><a href="#">百件<?php echo $motion_type?>汇编</a></li>
+        <li class="li8"><a href="#">搜索</a></li>
         <li><a href="#">公告</a></li>
     </ul>
     <div class="nav-right">
@@ -28,18 +33,18 @@
 <section class="clearfix" id="section">
     <aside id="aside">
         <ul>
-            <li>我的提案</li>
-            <li>我附议的提案</li>
-            <li>征集附议提案</li>
-            <li>本届提案</li>
-            <li>提案查询</li>
+            <li class="motion-filter" data-filter="all">我的<?php echo $motion_type?></li>
+            <li class="motion-filter" data-filter="coop">我附议的<?php echo $motion_type?></li>
+            <li class="motion-filter" data-filter="preCoop" >征集附议<?php echo $motion_type?></li>
+            <li class="motion-filter" data-filter="meeting">本届<?php echo $motion_type?></li>
+<!--            <li class="motion-filter">--><?php //echo $motion_type?><!--查询</li>-->
         </ul>
     </aside>
     <div class="main-show">
         <span id="span-contract"><i class="icon icon-caret-left"></i></span>
     </div>
     <div class="left section-main" id="main">
-        <div class="main-navbar"><h2>当前位置:<em>历届历次</em></h2></div>
+        <div class="main-navbar"><h2>当前位置:<em>我的<?php echo $motion_type?></em></h2></div>
         <div class="blueborder_lower">
             <div class="table-box">
                 <div class="table">
@@ -90,7 +95,7 @@
 <div class="popup popup1" style="display: none;">
     <div class="mask"></div>
     <div class="motion">
-        <h2 class="title-h2">我要提提案<i class="icon icon-close close-popup-js"></i>
+        <h2 class="title-h2">我要提<?php echo $motion_type?><i class="icon icon-close close-popup"></i>
         </h2>
 
         <div class="mot-h3"><h3><em></em></h3></div>
@@ -110,26 +115,33 @@
                     <tr>
                         <td><?php echo 1 == $_SESSION['userLogin']['category'] ? '领衔人' : '提案人' ?></td>
                         <td class="user-name">
-                            <?php if(isset($_SESSION['userLogin']['isAdmin'])):?>
+                            <?php if(isset($_SESSION['userLogin']['is_admin'])):?>
                                 <button class="target-select" data-target="duty" type="button" data-multiple="0">选择</button>
                             <?php else:?>
                             <?php echo $_SESSION['userLogin']['user_name']?>
                             <?php endif?>
                         </td>
                         <td>状态</td>
-                        <td class="meeting-status"><?php echo $_SESSION['userLogin']['status'] ?></td>
+                        <td class="meeting-status"><?php echo $_SESSION['userLogin']['status'] ?><input type="hidden" name="status" value="<?php echo $_SESSION['userLogin']['status'] ?>"></td>
                     </tr>
+                    <?php if(2==$_SESSION['userLogin']['category']):?>
                     <tr>
                         <td>界别</td>
                         <td class="user-group"><?php echo isset($_SESSION['userLogin']['user_group'])?$_SESSION['userLogin']['user_group']:''?></td>
                         <td>性质</td>
-                        <td><input type="radio" name="status" value="当年" checked>当年&nbsp;<input type="radio" name="status" value="多年重复">多年重复</td>
+                        <td><input type="radio" name="property" value="当年" checked>当年&nbsp;<input type="radio" name="property" value="多年重复" <?php if(1==$_SESSION['userLogin']['category']) echo 'disabled="disabled"' ?>>多年重复</td>
                     </tr>
+                    <?php endif?>
                     <tr>
                         <td>附议期限</td>
-                        <td><input type="text" id="date-selector" name="date" class="date-input" value="2017-02-28 10：28">
+                        <td><input type="text" id="date-selector" disabled>
                             <button type="button" class="date-btn"></button>
-                            <br><span class="red">其他委员可以在附议期限之前附议次提案</span></td>
+                            <input type="hidden" name="date" class="date-input">
+                            <?php if(2==$_SESSION['userLogin']['category']):?>
+                            <br><span class="red">其他委员可以在附议期限之前附议此提案</span></td>
+                            <?php else:?>
+                                <br><span class="red">其他代表可以在附议期限之前附议此建议/议案</span></td>
+                            <?php endif ?>
                         <td>希望承办单位</td>
                         <td>
                             <button type="button" class="unit-select target-select" data-target="unit" data-multiple="1">选择
@@ -137,8 +149,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>案由<br><span class="red">（提案题目）</span></td>
-                        <td colspan="3"><input type="text" name="motion-title" class="input-lon"></td>
+                        <td>案由<br><span class="red">（<?php echo $motion_type?>题目）</span></td>
+                        <td colspan="3"><input type="text" name="motion-title" class="input-lon" maxlength="150"></td>
                     </tr>
                     <tr>
                         <td>附件上传</td>
@@ -150,14 +162,20 @@
             </form>
         </div>
         <div class="refer">
-            <button type="button" class="close-popup-js" value="返回">返回</button>
+            <button type="button" class="close-popup" value="返回">返回</button>
             <button type="button" value="提交" class="submit">立即提交</button>
-            <button type="button" class="get-partner" value="征集附议">征集附议</button>
+            <button type="button" class="submit get-partner">征集附议</button>
         </div>
         <div class="mo-footer">
+            <?php if(2==$_SESSION['userLogin']['category']):?>
             <p class="red">立即提交： 将您提出的提案提交到提案委</p>
 
             <p class="red">征集附议： 其他委员将会附议您提出的提案</p>
+            <?php else:?>
+                <p class="red">立即提交： 将您提出的建议/议案将提交到人大代工委</p>
+
+                <p class="red">征集附议： 其他代表将会附议您提出的建议/议案</p>
+            <?php endif?>
         </div>
     </div>
 </div>
@@ -165,7 +183,7 @@
 <div class="popup popup2" style="display: none">
     <div class="mask"></div>
     <div class="motion my-messege">
-        <h2 class="title-h2">个人信息<i class="icon icon-close close-popup-js"></i>
+        <h2 class="title-h2">个人信息<i class="icon icon-close close-popup"></i>
         </h2>
 
         <div class="mot-h3"><h3>当前位置:<em>代表委员信息</em></h3></div>
@@ -174,59 +192,56 @@
                 <tbody>
                 <tr>
                     <td>姓名</td>
-                    <td>大队长</td>
+                    <td><?php echo $_SESSION['userLogin']['user_name']?></td>
                     <td>身份证号</td>
-                    <td>男</td>
-                </tr>
-                <tr>
-                    <td>身份证号</td>
-                    <td colspan="3">大队长</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td>工作单位</td>
-                    <td colspan="3">市政协提案副主任</td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
-                    <td>通信地址</td>
-                    <td colspan="3">市政协提案副主任</td>
+                    <td>职位</td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
                     <td>公众联系Email</td>
-                    <td colspan="3">市政协提案副主任</td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr>
                     <td>邮政编码</td>
-                    <td>235300</td>
+                    <td></td>
                     <td>出生年月</td>
-                    <td>1812.11.11</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td>联系电话</td>
-                    <td>400-123456798</td>
+                    <td></td>
                     <td>手机</td>
-                    <td>15825899651</td>
+                    <td></td>
                 </tr>
                 <tr>
-                    <td>界面</td>
-                    <td>中共界</td>
+                    <td>界别</td>
+                    <td></td>
                     <td>政治面貌</td>
-                    <td>中共</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td>届次</td>
-                    <td>慈溪市政协十一届一次会议</td>
+                    <td></td>
                     <td>手机</td>
-                    <td>15825899651</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td>备注</td>
                     <td colspan="3">&nbsp;</td>
                 </tr>
+
                 </tbody>
             </table>
         </div>
         <div class="refer">
-            <button type="button" value="返回" class="close-popup-js" style="padding: 5px 20px;">返回</button>
+            <button type="button" value="返回" class="close-popup" style="padding: 5px 20px;">返回</button>
         </div>
     </div>
 </div>
@@ -289,23 +304,20 @@
         </div>
     </div>
 </div>
+<div class="popup popup4" style="display: none">
+    <div class="mask"></div>
+    <div class="motion-container">
+        <h2 class="title-h2">提案建议信息<i class="icon icon-close close-popup"></i>
+
+            <div class="popup-table motion-info" style="height: 380px;overflow: auto; margin-top: 5px">
+
+            </div>
+        </h2>
+    </div>
+</div>
+
 
 </body>
-<script>
-    laydate({
-        elem:'#date-selector'
-    });
-    $('.submit').click(function(){
-        $('.create-form').submit();
-    });
 
-    $('.get-partner').click(function(){
-        $('#need-partner').val(0);
-        $('.create-form').submit();
-    });
-</script>
-<script>
-    var user = eval('(' + '<?php echo json_encode($_SESSION['userLogin'])?>' + ')');
-</script>
-<script type="text/javascript" src="js/getList.js"></script>
+<script type="text/javascript" src="js/getList.js?v=<?php echo rand(10, 1000) ?>"></script>
 </html>

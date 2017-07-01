@@ -30,8 +30,9 @@ function userAuth($user,$psd,$category){
         $staffInf=pdoQuery('staff_tbl',array('full_name','user_admin'),array('staff_name'=>$userId,'staff_password'=>$password),' and user_admin <> "{}" limit 1')->fetch();
         if($staffInf){
             $isAdmin=true;
-            $_SESSION['userLogin']['isAdmin']=true;
-            $dutyList=pdoQuery('duty_view',null,json_decode($staffInf['user_admin'],true),null);
+            $_SESSION['userLogin']['is_admin']=true;
+            $_SESSION['userLogin']['user_name']=$staffInf['full_name'];
+            $dutyList=pdoQuery('duty_view',null,json_decode($staffInf['user_admin'],true),'order by meeting asc');
         }else{
             return false;
         }
@@ -78,15 +79,23 @@ function ajaxMyMotionList($data){
         $sortFilter = array('category' => $category, 'attr_name' => trim($attrOrderBy));
         $keyWord = isset($data['duty_type'])?$data['duty_type']:'提案人';
         $dutyList= isset($data['duty_list'])?$data['duty_list']:0;
-//        $dutyList = array();
-//        $countFilter = array('category' => $category);
 
+        $limitedFilter=array('attr_name'=>$keyWord,'content_int'=>$dutyList);
+        $limitTable='motion_view';
+        $resultTbl="motion_view";
+        $limitStr=null;
+        if(isset($filter)){
+            if(isset($filter['key_word']))$limitedFilter['attr_name']=$filter['key_word'];
+            if(isset($filter['meeting']))$limitedFilter['meeting']=$_SESSION['userLogin']['meeting'];
+            if(isset($filter['preCoop'])){
+                $limitTable='pre_coop_tbl';
+                $limitedFilter=array('category'=>$_SESSION['userLogin']['category']);
+                $limitStr=' and end_time>'.time();
+                $resultTbl='pre_motion_view';
+                mylog('preCoop');
+            }
 
-        //获取代表委员数据，用以替换数据中的索引值
-//        $dutyQuery = pdoQuery('duty_view', array('duty_id', 'user_name', 'user_unit_name', 'user_unit', 'user_group', 'user_group_name'), array('meeting' => $meeting), null);
-//        foreach ($dutyQuery as $row) {
-//            $dutyList[$row['duty_id']] = $row;
-//        }
+        }
         if ('当前环节' == $attrOrderBy) {
             $orderStr = 'order by step ' . $attrOrder;
             unset($sortFilter['attr_name']);
@@ -102,7 +111,7 @@ function ajaxMyMotionList($data){
         $sortList = array();
         $motionfilter = array();
         $sortFilter['motion_id']=array();
-        $query=pdoQuery('motion_view',array('motion_id'),array('attr_name'=>$keyWord,'content_int'=>$dutyList),null);
+        $query=pdoQuery($limitTable,array('motion_id'),$limitedFilter,$limitStr);
         foreach ($query as $row) {
             $sortFilter['motion_id'][]=$row['motion_id'];
         }
@@ -149,12 +158,7 @@ function ajaxMyMotionList($data){
             $totalNumber=count($sortFilter['motion_id']);
 
         }
-
-
-//        if (-1 == $totalNumber) {
-//            $totalNumber = pdoQuery('motion_tbl', array('count(*) as count'), array('meeting' => $meeting), 'and step>0')->fetch()['count'];
-//        }
-        $sortQuery = pdoQuery('motion_view', array('motion_id'), $sortFilter, 'group by motion_id ' . $orderStr . ' limit ' . $page * $count . ',' . $count);
+        $sortQuery = pdoQuery($resultTbl, array('motion_id'), $sortFilter, 'group by motion_id ' . $orderStr . ' limit ' . $page * $count . ',' . $count);
         foreach ($sortQuery as $row) {
             $sort[] = $row['motion_id'];
             $sortList[$row['motion_id']] = array();
@@ -162,7 +166,7 @@ function ajaxMyMotionList($data){
         }
 
 
-        $motionDetail = pdoQuery('motion_view', null, array('motion_id' => $motionfilter, 'attr_name' => $field), null);
+        $motionDetail = pdoQuery($resultTbl, null, array('motion_id' => $motionfilter, 'attr_name' => $field), null);
         $singleRow = null;
         foreach ($motionDetail as $row) {
 //        if(!$singleRow)$singleRow=$row;
@@ -293,29 +297,248 @@ function signOut(){
 function ajaxCreateNewMotion(){
 
 }
-
 function create_motion(){
+    if(isset($_SESSION['userLogin']['create_mark'])&&$_SESSION['userLogin']['create_mark']==$_POST['motion-title'])return;//防止刷新重复提交
+    $_SESSION['userLogin']['create_mark']=$_POST['motion-title'];
     include_once 'includes/upload.class.php';
     mylog(getArrayInf($_POST));
+//    return;
     if(isset($_FILES['attachment-file'])&&$_FILES['attachment-file']['tmp_name']){
         $uploader=new uploader();
         $uploader->upFile(md5_file($_FILES['attachment-file']['tmp_name']));
         $fileInf=$uploader->getFileInfo();
-//        mylog(getArrayInf($uploader->getFileInfo()));
+        file_put_contents($GLOBALS['mypath'].'/original_'.$fileInf['url'], file_get_contents($GLOBALS['mypath'].'/'.$fileInf['url']));
+
     }else{
         return;
     }
     $category=$_SESSION['userLogin']['category'];
     $motionTemplate=$category;
-    $publicId=pdoInsert('motion_tbl',array('motion_name'=>$_POST['motion_title'],'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf.url,'step'=>$_POST['need-partner']));
     if(1==$category){
-
+        $dutyMotionAttr=6;
+        $dutyAttrTemp=4;
+        $attachmentMotionAttr=31;
+        $attachmentAttrTemp=12;
+        $propMotionAttr=29;
+        $propAttrTemp=9;
+        $statusMotionAttr=30;
+        $statusAttrTemp=8;
+        $titleMotionAttr=61;
+        $titleAttrTemp=3;
+        $_POST['property']='当年';
 
     }else{
-
-
+        $dutyMotionAttr=84;
+        $dutyAttrTemp=43;
+        $attachmentMotionAttr=21;
+        $attachmentAttrTemp=12;
+        $propMotionAttr=20;
+        $propAttrTemp=9;
+        $statusMotionAttr=16;
+        $statusAttrTemp=8;
+        $titleMotionAttr=36;
+        $titleAttrTemp=3;
     }
+    pdoTransReady();
+    try{
+        $motionid=pdoInsert('motion_tbl',array('motion_name'=>addslashes($_POST['motion-title']),'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf['url'],'step'=>$_POST['need-partner'],'duty'=>$_POST['duty']));
+        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$dutyMotionAttr,'attr_template'=>$dutyAttrTemp,'content_int'=>$_POST['duty']));
+        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$attachmentMotionAttr,'attr_template'=>$attachmentAttrTemp,'attachment'=>$fileInf['url'],'content'=>addslashes($fileInf['originalName'])));
+        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$propMotionAttr,'attr_template'=>$propAttrTemp,'content'=>$_POST['property']));
+        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$titleMotionAttr,'attr_template'=>$titleAttrTemp,'content'=>addslashes($_POST['motion-title'])));
+        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$statusMotionAttr,'attr_template'=>$statusAttrTemp,'content'=>$_POST['status']));
+        if(0==$_POST['need-partner']&&isset($_POST['date'])){
+            $preCoopStatus=time()>$_POST['date']?0:1;
+            pdoInsert('pre_coop_tbl',array('category'=>$_SESSION['userLogin']['category'],'motion_id'=>$motionid,'status'=>$preCoopStatus,'end_time'=>$_POST['date']));
+        }
 
+        pdoCommit();
+    }catch(PDOException $e){
+        mylog($e->getMessage());
+        pdoRollBack();
+    }
+    unset($_POST);
+    unset($_FILES);
+//    mylog(getArrayInf($_POST));
+
+}
+function getMotion($data){
+    global $config;
+    $id = $data['motion_id'];
+    $_SESSION['userLogin']['currentMotion']=$id;
+    $attrFilter = array('motion_id' => $id);
+    $meetingInf = pdoQuery('motion_inf_view', null, array('motion_id' => $id), ' limit 1')->fetch();
+    $motionQuery = pdoQuery('pre_motion_view', null, $attrFilter, ' order by value_sort desc,motion_attr asc');
+    $unitGroupInf = null;
+    $userType=1==$_SESSION['userLogin']['category']?'领衔人':'提案人';
+    $motion=array();
+    $owner=false;
+    $cooper=false;
+    foreach ($motionQuery as $row) {
+        if(0==$row['step']){
+            if('附议人'==$row['attr_name']&&in_array($row['content_int'],$_SESSION['userLogin']['duty_list']))$cooper=true;
+        }
+        $values = $row;
+        $optionArray = json_decode($row['option'], true);
+        $values['edit'] = false;
+        if (6==$row['attr_step']&&6==$row['step']) {
+            $values['edit']=true;
+        }
+        //将attr数据转化为可为用户观看的内容
+        $values['content'] = setAttrValue($row);
+
+        if ($values['edit']) {//如操作员流程权限与当前权限吻合，则可修改当前流程选项
+            $values['edit'] = true;
+            if (count($optionArray) > 0) {//普通选项
+                $values['option'] = array();
+                foreach ($optionArray as $oRow) {
+                    $values['option'][$oRow] = $oRow;
+                }
+                $values['class'] = 'select';
+                if (!$values['content']) $values['content'] = $row['default_value'];
+            }
+            if ($row['target']) {//数据库内容
+
+//                $values['filter']
+            }
+            //如果属性支持多值情况的处理
+            if (1 == $values['multiple']) {
+//                mylog('multiple');
+                //如果此属性已包含一个值，且有新值存在，则把值放入multiple_value数组中，存入前先将表内索引值转换为对应的名称
+                if (isset($motion[$row['attr_name']]) && $values['content']) {
+//                    mylog(getArrayInf($values));
+                    $motion[$row['attr_name']]['multiple_value'][$values['attr_id']] = array('content' => $values['content'], 'attachment' => $values['attachment']);
+
+                    //如果新值存在且此属性并未包含值
+                } elseif ($values['content']) {
+//                    mylog('has content');
+                    $motion[$row['attr_name']] = $values;
+                    $motion[$row['attr_name']]['multiple_value'][$values['attr_id']] = array('content' => $values['content'], 'attachment' => $values['attachment']);
+//                    mylog($row['attr_name'].': '.getArrayInf($motion));
+                } else {
+                    $motion[$row['attr_name']] = $values;
+                }
+//                mylog($values['content']);
+
+            } else {
+                $motion[$row['attr_name']] = $values;
+//                $motion[$row['attr_name']]['multiple_value'][]=array('attr_id'=>$values['attr_id'],'content'=>indexToValue($row['target'],$values['content']));
+            }
+        } else {
+            $values['edit'] = false;
+            if (1 == $values['multiple']) {
+                if (isset($motion[$row['attr_name']])) {
+                    if ($row['attachment']) {
+                        $motion[$row['attr_name']]['content'][] = array('content' => $values['content'], 'attachment' => $values['attachment']);
+                    } else {
+                        $tContent = $motion[$row['attr_name']]['content'] . ',' . $values['content'];
+                        $tContent = trim($tContent, ',');
+                        $motion[$row['attr_name']]['content'] = $tContent;
+                    }
+                } else {
+                    if ($row['attachment']) {
+                        $motion[$row['attr_name']] = $values;
+                        $motion[$row['attr_name']]['content'] = array();
+                        $motion[$row['attr_name']]['content'][] = array('content' => $values['content'], 'attachment' => $values['attachment']);
+                    } else {
+                        $motion[$row['attr_name']] = $values;
+                    }
+                }
+
+
+            } else {
+                $motion[$row['attr_name']] = $values;
+            }
+        }
+
+        //获取领衔人信息
+//        if ('领衔人' == $row['attr_name'] || '提案人' == $row['attr_name']) {
+//            $query = pdoQuery('duty_view', null, array('duty_id' => $row['content_int']), 'limit 1')->fetch();
+//            $unitGroupInf = array('unit' => $query['user_unit_name'], 'group' => $query['user_group_name']);
+//        }
+    }
+    if(in_array($motion[$userType]['content_int'],$_SESSION['userLogin']['duty_list']))$owner=true;
+    $currentStep = current($motion)['step'];
+
+    //协办单位列表
+    if($currentStep>4){
+        $handlerQuery = pdoQuery('motion_handler_view', null, array('motion' => $id, 'status' =>9), null);
+        $handlerDisplay = array();
+        foreach ($handlerQuery as $row) {
+                $handlerDisplay[] = $row;
+        }
+    }
+//    mylog($owner.','.$cooper);
+    $canCoop=$currentStep==0&&!$owner&&!cooper&&!$_SESSION['userLogin']['is_admin'];
+    include 'view/motion_inf.html.php';
+    return;
+}
+
+/**
+ * 解析motion_view中获取的数据，将索引或时间戳转换成可显示的值
+ * @param  motion_view中的一条数据
+ * @return 转换后的内容
+ */
+function setAttrValue($row)
+{
+    $content = $row['content'] ? $row['content'] : '';
+    if ('int' == $row['value_type']) $content = $row['content_int'];
+    if ('time' == $row['value_type'] && $row['content_int'] > 0) $content = date('Y-m-d', $row['content_int']);
+    if ($row['target']) {
+        $content = DataSupply::indexToValue($row['target'], $row['content_int']);
+    }
+    return $content;
+}
+
+/**ajax填充议案属性
+ * @param $data {step:1,data:values}
+ */
+function updateAttr($data)
+{
+    $isFoward = $data['step'];
+    $motionId = $_SESSION['userLogin']['currentMotion'];
+    $motion = pdoQuery('motion_tbl', null, array('motion_id' => $motionId), ' limit 1')->fetch();
+    $currentStep = $motion['step'];
+    $attrs = isset($data['data']) ? $data['data'] : array();
+    pdoTransReady();
+    try {
+        foreach ($attrs as $row) {
+            $value = array();
+            if ((!isset($row['value']) || !$row['value']) && $row['attr_type'] != 'attachment') {//过滤非附件的空值
+                continue;
+            }
+            if ('attachment' == $row['attr_type']) continue;
+            if ($row['attr_id']) $value['attr_id'] = $row['attr_id'];
+            $value['motion'] = $motionId;
+            $value['motion_attr'] = $row['motion_attr'];
+            $value['attr_template'] = $row['attr_template'];
+            if ('index' == $row['attr_type'] || 'int' == $row['attr_type']) {
+                $value['content_int'] = $row['value'];
+            } elseif ('time' == $row['attr_type']) {
+                $value['content_int'] = time();
+            } else {
+                $value['content'] = addslashes($row['value']);
+            }
+            pdoInsert('attr_tbl', $value, 'update');
+        }
+        //点击下一步的操作
+        if ($isFoward > 0) {
+            $currentStep++;
+            if(1==$currentStep)exeNew('delete from pre_coop_tbl where motion_id='.$motionId);
+            pdoUpdate('motion_tbl', array('step' => $currentStep), array('motion_id' => $motionId));
+
+        }
+
+        mylog('ok');
+        pdoCommit();
+        echo ajaxBack(array('step' => $currentStep, 'id' => $motionId));
+    } catch (PDOException $e) {
+        mylog($e->getMessage());
+        mylog($e->errorInfo);
+        pdoRollBack();
+        mylog('出错');
+        echo ajaxBack($e->errorInfo);
+    }
 
 
 }

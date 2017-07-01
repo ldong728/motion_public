@@ -19,10 +19,10 @@ define('PASSWORD','admin');
 define("TOKEN", "godlee");
 define('DOMAIN',"/motion_public");
 define('NOTIFY_URL',"now is null");
-define('DB_IP','localhost');
-define("DB_NAME","motion_public_db");
-define("DB_USER","test");
-define("DB_PSW","test");
+define('DB_IP','183.136.192.58');
+define("DB_NAME","gov_motion_db");
+define("DB_USER","gov_motion_user");
+define("DB_PSW","RtHbXcN2LR6HD53F");
 $mypath = $_SERVER['DOCUMENT_ROOT'] .DOMAIN;   //用于直接部署
 
 

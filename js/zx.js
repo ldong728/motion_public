@@ -35,6 +35,53 @@ $(document).ready(function(){
         $('.target-value-selecter').removeClass('target-value-selecter');
 		$('.popup').hide();
 	});
+    $(document).on('click','.close-popup',function(){
+        $('.target-value-selecter').removeClass('target-value-selecter');
+        $('.popup').hide();
+    });
+    $(document).on('click','.submit',function(){
+        var error=false;
+        $('.create-form').find('input').each(function(k,v){
+            if('motion-title'==$(v).attr('name')&&!$.trim($(v).val()))error='案由不能为空';
+            if('attachment-file'==$(v).attr('name')&&!$(v).val())error="附件未上传";
+        });
+        if(error){
+            alert(error);
+        }else{
+            if($(this).hasClass('get-partner')){
+                $('#need-partner').val(0);
+                var setDate=$('#date-selector').val();
+                if(setDate){
+                    var dateTimeStamp=Date.parse(new Date(setDate));
+                    dateTimeStamp=(dateTimeStamp+'').slice(0,10);
+                    $('.date-input').val(dateTimeStamp);
+                }else{
+                    alert('截止日期未设置');
+                    return;
+                }
+
+                console.log(dateTimeStamp);
+            }
+            $('.create-form').submit();
+        }
+    });
+    //$(document).on('click','#date-selector',function(){
+    $('.date-btn').click(function () {
+        laydate({
+            elem: '#date-selector',
+            min: laydate.now(+2),
+            max: laydate.now(+30)
+        });
+    });
+    $(document).on('click','.motion-content',function(){
+        var id=$(this).attr('id').slice(3);
+        ajaxPost('getMotion',{motion_id:id},function(data){
+            //console.log(data);
+            $('.motion-info').html(data)
+            $('.popup4').show();
+
+        });
+    })
 
 	
 });

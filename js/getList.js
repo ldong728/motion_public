@@ -19,10 +19,22 @@ $('.count-in-page').change(function(){
     count=parseInt($(this).val());
     reflashList(orderby,page,order);
 });
-$('.list-filter').click(function(){
-    filter={};
-    filter.step=$(this).data('step');
-    filter.filter=$(this).data('filtertype');
+$('.motion-filter').click(function(){
+    var filterType=$(this).data('filter');
+    switch(filterType){
+        case 'coop':
+            filter={key_word:'附议人'};
+            break;
+        case 'preCoop':
+            filter={preCoop:1};
+            break;
+        case 'meeting':
+            console.log('meeting');
+            filter={meeting:1};
+            break;
+        default :
+            filter={};
+    }
     reflashList(orderby,page,order);
 });
 $('.order-by-attr').click(function(){
@@ -37,29 +49,6 @@ $('.order-by-attr').click(function(){
     var orderText=order?'(升序)':'(降序)';
     reflashList(orderby,page,order);
     $('.order-disply').text(newOrderby+orderText);
-});
-$('.create-motion').click(function(){
-    var maskHeight = $(document.body).height();
-    ajaxPost('createMotion',{},function(data){
-        $('.m-popup').html(data);
-        $('.m-popup').show();
-        $('.mask').show();
-        $('.mask').css('height',maskHeight);
-        mPopup();
-    })
-});
-$(document).on('click','.motion-select',function(){
-    var maskHeight = $(document.body).height();
-    var id=$(this).attr('id');
-    ajaxPost('editMotion',{id:id},function(data){
-//            console.log(data);
-//            alert(data);
-        $('.m-popup').html(data);
-        $('.m-popup').show();
-        $('.mask').show();
-        $('.mask').css('height',maskHeight);
-        mPopup();
-    });
 });
 $(document).on('click','.sign-out',function(){
     signOut(user.category);
@@ -87,21 +76,7 @@ $(document).on('click','.last-page',function(){
     page=totalPages-1;
     reflashList(orderby,page,order)
 });
-$(document).on('click','.delete-motion',function(){
-    var motionId=$(this).attr('id').slice(3);
 
-    if(staff.steps.indexOf('3')>-1){
-        if(confirm('警告：是否删除此条记录？')){
-            ajaxPost('ajaxDeleteMotion',{id:motionId},function(data){
-                if('ok'==backHandle(data)){
-                    reflashList(orderby,page,order);
-                }
-            });
-        }
-
-    }
-
-});
 $(document).on('click','.multiple-statistics',function(){
     location.href="?download=multiple_statistics";
 });
@@ -149,18 +124,10 @@ function reCalculate(totalCount){
     $('.current-num').text((page*count+1)+'-'+last);
     $('.total-num').text(totalCount);
     //$('.page-inf').text(''+(page*count+1)+'-'+last+'共'+totalCount+'条记录，共'+totalPages+'页');
-    console.log(totalPages);
+    //console.log(totalPages);
 
 }
 
-function mPopup(){
-    var bWidth = document.documentElement.clientWidth;
-    var bHeight = document.documentElement.clientHeight ;
-    var sWidth = (bWidth-837)/2;
-    var sHeight = (bHeight-580)/2;
-    $('.suggest').css('left',sWidth);
-    $('.suggest').css('top',sHeight);
-}
 function formatNormalData(back){
     //return;
     var type=1==user.category?'领衔人':'提案人';
@@ -174,13 +141,13 @@ function formatNormalData(back){
         if(v>0){
             var content='<tr class="tr1 trr1 table-element">';
             content+='<td>'+(myCount++)+'</td>';
-            content+='<td>'+c[v]['案号']||''+'</td>';
-            content+='<td>'+c[v][type]||''+'</td>';
-            content+='<td>'+c[v]['状态']||''+'</td>';
-            content+='<td>'+c[v]['当前环节']||''+'</td>';
-            content+='<td>'+c[v]['案由']||''+'</td>';
-            content+='<td>'+c[v]['主办单位']||''+'</td>';
-            content+='<td>'+c[v]['协办单位']||''+'</td>';
+            content+='<td>'+(c[v]['案号']||'')+'</td>';
+            content+='<td>'+(c[v][type]||'')+'</td>';
+            content+='<td>'+(c[v]['状态']||'')+'</td>';
+            content+='<td>'+(c[v]['当前环节']||'')+'</td>';
+            content+='<td style="cursor: pointer" class="motion-content" id="mot'+v+'">'+c[v]['案由']||''+'</td>';
+            content+='<td>'+(c[v]['主办单位']||'')+'</td>';
+            content+='<td>'+(c[v]['协办单位']||'')+'</td>';
             content+='</td></tr>';
             $('.list-container').append(content);
 

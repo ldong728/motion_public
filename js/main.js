@@ -22,7 +22,11 @@ function backHandle(data){
     }
 }
 function ajaxPost(method,ajaxData,callback){
-    $.post('index.php',{ajax:method,ajax_data:ajaxData},callback);
+    loading();
+    $.post('index.php',{ajax:method,ajax_data:ajaxData},function(data){
+        stopLoading();
+        callback(data);
+    });
 }
 function mylog(data){
     console.log(data);
@@ -48,4 +52,11 @@ function prepareElement(){
         $(v).remove();
     });
     return returnData;
+}
+function loading(){
+
+}
+
+function stopLoading(){
+
 }

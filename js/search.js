@@ -1,13 +1,3 @@
-$(document).on('click','.multiple-search',function(){
-    var maskHeight = $(document.body).height();
-    ajaxPost('searchMotionView',{category:category,meeting:meetingId},function(data){
-        $('.m-popup').html(data);
-        $('.m-popup').show();
-        $('.mask').show();
-        $('.mask').css('height',maskHeight);
-        mPopup();
-    });
-});
 
 function decodeSearchDate(element) {
     element.each(function (key, subElement) {
