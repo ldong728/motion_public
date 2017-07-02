@@ -308,6 +308,7 @@ function create_motion(){
         $uploader->upFile(md5_file($_FILES['attachment-file']['tmp_name']));
         $fileInf=$uploader->getFileInfo();
         file_put_contents($GLOBALS['mypath'].'/original_'.$fileInf['url'], file_get_contents($GLOBALS['mypath'].'/'.$fileInf['url']));
+        mylog(getArrayInf($fileInf));
 
     }else{
         return;
@@ -541,4 +542,9 @@ function updateAttr($data)
     }
 
 
+}
+
+function ajaxAddCoop($data){
+
+    echo ajaxBack('ok');
 }

@@ -29,14 +29,15 @@ if(isset($_SESSION['staffLogin'])&&$_SESSION['staffLogin']['currentMotion']){
                     }catch(PDOException $e){
                         $inf['state']='fail';
                     }
+                $inf['step']=$step;
+                echo json_encode($inf);
+                if(1==$step){
 
+                    file_put_contents($GLOBALS['mypath'].'/original_'.$inf['url'], file_get_contents($GLOBALS['mypath'].'/'.$inf['url']));
+                    pdoUpdate('motion_tbl',array('document'=>addslashes($inf['originalName']),'document_sha'=>$inf['url']),array('motion_id'=>$_SESSION['staffLogin']['currentMotion']),'limit 1');
+                }
             }
-            $inf['step']=$step;
-            echo json_encode($inf);
-            if(1==$step){
-                file_put_contents($GLOBALS['mypath'].'/original_'.$inf['url'], file_get_contents($GLOBALS['mypath'].'/'.$inf['url']));
-                pdoUpdate('motion_tbl',array('document'=>addslashes($inf['originalName']),'document_sha'=>$inf['url']),array('motion_id'=>$_SESSION['staffLogin']['currentMotion']),'limit 1');
-            }
+
         }
     }
 }

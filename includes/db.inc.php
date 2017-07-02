@@ -80,7 +80,7 @@ function pdoQuery($tableName, $fields, $where, $append)
         $sql=$sql.' '.trim($append);
     }
     try {
-        mylog('query:'.$sql);
+//        mylog('query:'.$sql);
         $query = $GLOBALS['pdo']->query($sql);
         return $query;
     }catch (PDOException $e) {

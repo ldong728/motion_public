@@ -32,27 +32,26 @@ if(isset($_SESSION['userLogin'])){
 //        unset($_POST['post_method']);
         exit;
     }
-    if(isset($_GET['get_meeting'])){
-        getMeetingView($_GET['get_meeting']);
-        exit;
-    }
-    if(isset($_GET['statistics_excel_out'])){
-        $totalList= handleStatistics(0, $_SESSION['userLogin']['category']);
-        include"view/statisticsOutExcel.html.php";
-//        include"view/statistics_document.html.php";
-        exit;
-    }
-    if(isset($_GET['download'])){
-//        mylog();
-        include_once "downLoad.php";
-        $_GET['download']();
-    }
-    if(isset($_FILES)){
-        if(isset($_POST['file_type'])&&'excel'==$_POST['file_type']){
-            encodeExcel();
-        }
-
-    }
+//    if(isset($_GET['get_meeting'])){
+//        getMeetingView($_GET['get_meeting']);
+//        exit;
+//    }
+//    if(isset($_GET['statistics_excel_out'])){
+//        $totalList= handleStatistics(0, $_SESSION['userLogin']['category']);
+//        include"view/statisticsOutExcel.html.php";
+////        include"view/statistics_document.html.php";
+//        exit;
+//    }
+//    if(isset($_GET['download'])){
+//        include_once "downLoad.php";
+//        $_GET['download']();
+//    }
+//    if(isset($_FILES)){
+//        if(isset($_POST['file_type'])&&'excel'==$_POST['file_type']){
+//            encodeExcel();
+//        }
+//
+//    }
 //    echo(getArrayInf($_SESSION));
 //    mylog('index');
    getIndex();
@@ -60,7 +59,8 @@ if(isset($_SESSION['userLogin'])){
     if(isset($_POST['user'])&&isset($_POST['password'])&&isset($_POST['category'])){
         $category=$_POST['category'];
         if(userAuth($_POST['user'],$_POST['password'],$category)){
-            echo getArrayInf($_SESSION);
+//            echo getArrayInf($_SESSION);
+            getIndex();
             exit;
         }
         unset($_POST['password']);

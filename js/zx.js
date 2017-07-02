@@ -81,7 +81,12 @@ $(document).ready(function(){
             $('.popup4').show();
 
         });
-    })
+    });
+    $(document).on('click','add-coop',function(){
+        ajaxPost('ajaxAddCoop',{duty:user.currrent_duty},function(){
+
+        });
+    });
 
 	
 });

@@ -6,9 +6,9 @@ i,button{cursor: pointer;}
 a{color: inherit;}
 .clearfix::after{display: table;content: '';clear:both;}
 /*header*/
-.header{position: relative;width: 100%;min-width: 1280px; height: 80px; background: linear-gradient(to bottom,#4999d4,#d2e4f8);border-bottom: 2px solid #0162cb;box-sizing: border-box;}
+.header{position: relative;width: 100%;min-width: 1280px; height: 80px; /*background: linear-gradient(to bottom,#4999d4,#d2e4f8);*/background-color:#f0f0f0;border-bottom: 2px solid #0162cb;box-sizing: border-box;}
 .header-l{position: relative;float: left;width: 400px;height: 80px;margin-left: 50px; line-height: 80px;}
-.header-l img{vertical-align: middle;}
+.header-l img{vertical-align: middle;width: 100%}
 .header-r{position: relative;float: right;height: 80px;line-height: 110px; margin-right: 20px; color: #fff;font-size: 13px;z-index: 499;}
 .header-r a{padding: 10px 15px;margin-right: 20px;font-size: 14px;}
 

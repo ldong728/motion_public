@@ -1,4 +1,4 @@
-<?php $motion_type=1==$_SESSION['userLogin']['category']?'建议/议案':'<?php echo $motion_type?>'?>
+<?php $motion_type=1==$_SESSION['userLogin']['category']?'建议/议案':'提案'?>
 <body>
 <script>
     var user = eval('(' + '<?php echo json_encode($_SESSION['userLogin'])?>' + ')');
@@ -10,7 +10,7 @@
 <script type="text/javascript" src="js/laydate.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="css/main.css?v=<?php echo rand(1000, 9999) ?>">
 <header class="header">
-    <div class="header-l"><img src="images/logo.png" alt="logo"></div>
+    <div class="header-l"><img src="images/p<?php echo $_SESSION['userLogin']['category']?>.jpg" alt="logo"></div>
     <div class="header-r">
         <a href="#">密码修改</a>
         <a href="#" class="sign-out">退出系统</a>

@@ -68,9 +68,7 @@
         <td>提案人</td>
         <td colspan="5" class="user-type verify-value" style="text-align: left;padding-left: 10px;"><span
                 class="encoded-data"><?php echo json_encode($motion['提案人'], JSON_UNESCAPED_UNICODE) ?></span></td>
-        <td >
-            <button class="user-inf" id="inf<?php echo current($motion)['motion_id']?>">显示</button>
-        </td>
+
     </tr>
     <tr class="union-conecter" <?php if(!$motion['提案联系人']['content'])echo 'style="display: none"'?>>
         <td>联系人</td>
@@ -85,7 +83,10 @@
 
 </tr>
 <?php if($canCoop):?>
-
+    <tr>
+        <td></td>
+        <td><button class="add-coop">我要附议</button></td>
+        </tr>
 <?php endif ?>
 <tr>
     <td>案由</td>
@@ -110,7 +111,7 @@
                 class="encoded-data"><?php echo json_encode($motion['初审'], JSON_UNESCAPED_UNICODE) ?></span>
         </td>
         <td>初审意见</td>
-        <td colspan="5" style="text-align: left;padding-left: 10px;"><span
+        <td colspan="3" style="text-align: left;padding-left: 10px;"><span
                 class="encoded-data"><?php echo json_encode($motion['初审意见'], JSON_UNESCAPED_UNICODE) ?></span></td>
     </tr>
 <?php endif?>
