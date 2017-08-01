@@ -21,8 +21,8 @@ define('DOMAIN',"/motion_public");
 define('NOTIFY_URL',"now is null");
 define('DB_IP','localhost');
 define("DB_NAME","gov_motion_db");
-define("DB_USER","wan_user");
-define("DB_PSW","HLV5hpTqEaYPyMmA");
+define("DB_USER","gov_motion_user");
+define("DB_PSW","uByQMbYbTy9amub4");
 $mypath = $_SERVER['DOCUMENT_ROOT'] .DOMAIN;   //用于直接部署
 
 

@@ -16,13 +16,13 @@
     });
     $(document).on('click', '.save-attr', function () {
         submitAtrrs(0, function (data) {
-            if('meeting'==place){
+            //if('meeting'==place){
                 $('.close-popup').click();
                 reflashList(orderby,page,order);
-            }else{
-                $('.close-popup').click();
+            //}else{
+            //    $('.close-popup').click();
                 //window.location.reload(true);
-            }
+            //}
 
             //closePopUp($('.m-phpup'));
             //location.href=location.href;

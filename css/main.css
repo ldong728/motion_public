@@ -10,7 +10,7 @@ a{color: inherit;}
 .header-l{position: relative;float: left;width: 400px;height: 80px;margin-left: 50px; line-height: 80px;}
 .header-l img{vertical-align: middle;width: 100%}
 .header-r{position: relative;float: right;height: 80px;line-height: 110px; margin-right: 20px; color: #fff;font-size: 13px;z-index: 499;}
-.header-r a{padding: 10px 15px;margin-right: 20px;font-size: 14px;}
+.header-r a{padding: 10px 15px;margin-right: 20px;font-size: 14px;color: #272121;}
 
 /*nav*/
 .home-nav{position: relative;width: 100%;height: 50px;background-color:#0162cb;border-bottom: none;box-sizing: border-box;overflow: hidden;}

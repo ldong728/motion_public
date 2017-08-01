@@ -6,7 +6,7 @@
  * Time: 13:53
  */
 function userAuth($user,$psd,$category){
-    mylog('userAuth');
+//    mylog('userAuth');
     $userId=$user;
     $password=$psd;
     $isAdmin=false;
@@ -27,15 +27,38 @@ function userAuth($user,$psd,$category){
             return false;
         }
     }else{
-        $staffInf=pdoQuery('staff_tbl',array('full_name','user_admin'),array('staff_name'=>$userId,'staff_password'=>$password),' and user_admin <> "{}" limit 1')->fetch();
-        if($staffInf){
-            $isAdmin=true;
-            $_SESSION['userLogin']['is_admin']=true;
-            $_SESSION['userLogin']['user_name']=$staffInf['full_name'];
-            $dutyList=pdoQuery('duty_view',null,json_decode($staffInf['user_admin'],true),'order by meeting asc');
+        if(1==$category){
+            $staffInf=pdoQuery('staff_tbl',array('full_name','user_admin'),array('staff_name'=>$userId,'staff_password'=>$password),' and user_admin <> "{}" limit 1')->fetch();
+            if($staffInf){
+                $isAdmin=true;
+                $_SESSION['userLogin']['is_admin']=true;
+                $_SESSION['userLogin']['user_name']=$staffInf['full_name'];
+                $dutyList=pdoQuery('duty_view',null,json_decode($staffInf['user_admin'],true),'order by meeting asc');
+            }else{
+                return false;
+            }
         }else{
-            return false;
+            $userInf=pdoQuery('user_tbl',null,array('login_name'=>$userId),'limit 1')->fetch();
+            if($userInf){
+                if(($userInf['password']&&$userInf['password']==$password)||(!$userInf['password']&&md5($password)==md5('123456'))){
+                    $_SESSION['userLogin']['user_name']=$userInf['user_name'];
+                    $admin_type=pdoQuery('duty_tbl',['admin_type'],array('user'=>$userInf['user_id'],'category'=>$category),'order by meeting desc limit 1')->fetch();
+                    if($admin_type['admin_type']){
+                        $isAdmin=true;
+                        $_SESSION['userLogin']['is_admin']=true;
+                        $dutyList=pdoQuery('duty_view',null,json_decode($admin_type['admin_type'],true),'order by meeting asc');
+                    }else{
+                        $dutyList=pdoQuery('duty_view',null,array('user'=>$userInf['user_id'],'category'=>$category),'limit 10')->fetchAll();
+                    }
+
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
         }
+
     }
     if($dutyList){
         $_SESSION['userLogin']['category']=$category;
@@ -352,6 +375,9 @@ function create_motion(){
             $preCoopStatus=time()>$_POST['date']?0:1;
             pdoInsert('pre_coop_tbl',array('category'=>$_SESSION['userLogin']['category'],'motion_id'=>$motionid,'status'=>$preCoopStatus,'end_time'=>$_POST['date']));
         }
+        if (2 == $_SESSION['userLogin']['category']) {
+            pdoInsert('zx_motion_tbl', array('motion' => $motionid));
+        }
 
         pdoCommit();
     }catch(PDOException $e){
@@ -501,6 +527,7 @@ function updateAttr($data)
     $motion = pdoQuery('motion_tbl', null, array('motion_id' => $motionId), ' limit 1')->fetch();
     $currentStep = $motion['step'];
     $attrs = isset($data['data']) ? $data['data'] : array();
+    $canfoward=true;
     pdoTransReady();
     try {
         foreach ($attrs as $row) {
@@ -518,12 +545,14 @@ function updateAttr($data)
             } elseif ('time' == $row['attr_type']) {
                 $value['content_int'] = time();
             } else {
+
                 $value['content'] = addslashes($row['value']);
+                if('不满意'==$value['content'])$canfoward=false;
             }
             pdoInsert('attr_tbl', $value, 'update');
         }
         //点击下一步的操作
-        if ($isFoward > 0) {
+        if ($isFoward > 0&&$canfoward) {
             $currentStep++;
             if(1==$currentStep)exeNew('delete from pre_coop_tbl where motion_id='.$motionId);
             pdoUpdate('motion_tbl', array('step' => $currentStep), array('motion_id' => $motionId));

@@ -239,6 +239,7 @@
     <?php endforeach ?>
    <?php endif ?>
 <?php if ($meetingInf['step'] > 5||(isset($motion['办理工作']['content'])&&$motion['办理工作']['content'])): ?>
+<?php if(2==$meetingInf['category']):?>
     <tr>
         <td>办理工作</td>
         <td><span class="encoded-data"><?php echo json_encode($motion['办理工作'], JSON_UNESCAPED_UNICODE) ?></span>
@@ -255,7 +256,7 @@
         <td class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['面商形式'], JSON_UNESCAPED_UNICODE) ?></span>
         </td>
         <td>面商人</td>
-        <td class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['面商人'], JSON_UNESCAPED_UNICODE) ?></span>
+        <td><span class="encoded-data"><?php echo json_encode($motion['面商人'], JSON_UNESCAPED_UNICODE) ?></span>
         </td>
         <td>落实情况</td>
         <td class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['落实情况'], JSON_UNESCAPED_UNICODE) ?></span>
@@ -266,6 +267,29 @@
         <td colspan="5" class="colspan7" style="text-align: left;padding-left: 10px;"><span class="encoded-data"><?php echo json_encode($motion['反馈意见全文'], JSON_UNESCAPED_UNICODE) ?></span>
         </td>
     </tr>
+    <?php else: ?>
+        <tr>
+            <td>面商形式</td>
+            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['面商形式'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+            <td>采纳情况</td>
+            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['采纳情况'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+        </tr>
+        <tr>
+            <td>办理工作</td>
+            <td colspan="2"><span class="encoded-data"><?php echo json_encode($motion['办理工作'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+            <td>办理结果</td>
+            <td colspan="2"><span class="encoded-data"><?php echo json_encode($motion['办理结果'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+        </tr>
+        <tr>
+            <td>反馈意见全文</td>
+            <td colspan="5" class="colspan7" style="text-align: left;padding-left: 10px;"><span class="encoded-data"><?php echo json_encode($motion['反馈意见全文'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+        </tr>
+    <?php endif ?>
     <?php if(6==$currentStep):?>
         <tr>
             <td>操作</td>
