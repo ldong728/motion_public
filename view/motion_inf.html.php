@@ -79,7 +79,7 @@
 <tr>
     <td>附议人</td>
     <td colspan="5" class="fuyi-count" style="text-align: left;padding-left: 10px;"><span
-            class="encoded-data"><?php echo json_encode($motion['附议人'], JSON_UNESCAPED_UNICODE) ?></span></td>
+         class="encoded-data"><?php echo json_encode($motion['附议人'], JSON_UNESCAPED_UNICODE) ?></span></td>
 
 </tr>
 <?php if($canCoop):?>

@@ -24,8 +24,10 @@ function backHandle(data){
 function ajaxPost(method,ajaxData,callback){
     loading();
     $.post('index.php',{ajax:method,ajax_data:ajaxData},function(data){
+        console.log(method);
         stopLoading();
         callback(data);
+
     });
 }
 function mylog(data){

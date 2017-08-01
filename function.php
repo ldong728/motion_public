@@ -115,7 +115,7 @@ function ajaxMyMotionList($data){
                 $limitedFilter=array('category'=>$_SESSION['userLogin']['category']);
                 $limitStr=' and end_time>'.time();
                 $resultTbl='pre_motion_view';
-                mylog('preCoop');
+//                mylog('preCoop');
             }
 
         }
@@ -181,12 +181,87 @@ function ajaxMyMotionList($data){
             $totalNumber=count($sortFilter['motion_id']);
 
         }
+    //综合搜索
+//    mylog(getArrayInf($filter));
+    if(isset($filter['multiple_search'])){
+        $searchLimit=null;
+//        $multipleSearchFilter=null;
+        $multipleSearchTempFilter=array('meeting'=>$_SESSION['userLogin']['meeting']);
+        $multipleSearchMotionLimit=null;
+        $filterDetail=$filter['multiple_search'];
+        if(isset($filterDetail['user_unit'])){
+            $multipleSearchTempFilter['user_unit']=$filterDetail['user_unit']['value'];
+            unset($filterDetail['user_unit']);
+        }
+        if(isset($filterDetail['user_group'])){
+            $multipleSearchTempFilter['user_group']=$filterDetail['user_group']['value'];
+            unset($filterDetail['user_group']);
+        }
+        if(count($multipleSearchTempFilter)>1){
+            $attrName=1==$category?"领衔人":"提案人";
+            $multipleDutyList=pdoQuery('duty_tbl',array('duty_id'),$multipleSearchTempFilter,null)->fetchAll();
+            $multipleSearchMotionLimit=pdoQuery('motion_view',['motion_id'],['attr_name'=>$attrName,'content_int'=>$multipleDutyList],null);
+            foreach ($multipleSearchMotionLimit as $row) {
+                $searchLimit[]=$row['motion_id'];
+            }
+        }
+        mylog(getArrayInf($filter['multiple_search']));
+        foreach($filterDetail as $k=>$v){
+            $sMotionAttr=$v['motionAttr'];
+            $sType=$v['type'];
+            $sValue=$v['value'];
+            $sWhere=['motion_attr'=>$sMotionAttr];
+            if(is_array($searchLimit)&&count($searchLimit)>0)$sWhere['motion']=$searchLimit;
+            elseif(is_array($searchLimit)&&0==count($searchLimit))break;
+            $str=null;
+            switch($sType){
+                case 'string':
+                    $str=' and content like "%'.$sValue.'%"';
+                    break;
+                case 'option':
+                    $sWhere['content']=$sValue;
+                    break;
+                case 'int':
+                    $sWhere['content_int']=$sValue;
+                    break;
+                default:
+                    $sWhere['content_int']=$sValue;
+                    break;
+            }
+
+            $motionQuery=pdoQuery('attr_tbl',['motion as motion_id'],$sWhere,$str);
+            $motions=array();
+            foreach ($motionQuery as $row) {
+                $motions[]=$row['motion_id'];
+            }
+
+            if(is_array($searchLimit)){
+                $searchLimit=array_intersect($searchLimit,$motions);
+            }else{
+                $searchLimit=$motions;
+            }
+        }
+
+
+
+
+        if(isset($sortFilter['motion_id'])){
+            $sortFilter['motion_id']=array_intersect($sortFilter['motion_id'],$searchLimit);
+        }else{
+            $sortFilter['motion_id']=$searchLimit;
+        }
+        $totalNumber=count($sortFilter['motion_id']);
+
+
+
+    }
         $sortQuery = pdoQuery($resultTbl, array('motion_id'), $sortFilter, 'group by motion_id ' . $orderStr . ' limit ' . $page * $count . ',' . $count);
         foreach ($sortQuery as $row) {
             $sort[] = $row['motion_id'];
             $sortList[$row['motion_id']] = array();
             $motionfilter[] = $row['motion_id'];
         }
+
 
 
         $motionDetail = pdoQuery($resultTbl, null, array('motion_id' => $motionfilter, 'attr_name' => $field), null);
@@ -372,6 +447,7 @@ function create_motion(){
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$titleMotionAttr,'attr_template'=>$titleAttrTemp,'content'=>addslashes($_POST['motion-title'])));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$statusMotionAttr,'attr_template'=>$statusAttrTemp,'content'=>$_POST['status']));
         if(0==$_POST['need-partner']&&isset($_POST['date'])){
+            mylog('need_coop');
             $preCoopStatus=time()>$_POST['date']?0:1;
             pdoInsert('pre_coop_tbl',array('category'=>$_SESSION['userLogin']['category'],'motion_id'=>$motionid,'status'=>$preCoopStatus,'end_time'=>$_POST['date']));
         }
@@ -479,10 +555,10 @@ function getMotion($data){
         }
 
         //获取领衔人信息
-//        if ('领衔人' == $row['attr_name'] || '提案人' == $row['attr_name']) {
-//            $query = pdoQuery('duty_view', null, array('duty_id' => $row['content_int']), 'limit 1')->fetch();
-//            $unitGroupInf = array('unit' => $query['user_unit_name'], 'group' => $query['user_group_name']);
-//        }
+        if ('领衔人' == $row['attr_name'] || '提案人' == $row['attr_name']) {
+            $query = pdoQuery('duty_view', null, array('duty_id' => $row['content_int']), 'limit 1')->fetch();
+            $unitGroupInf = array('unit' => $query['user_unit_name'], 'group' => $query['user_group_name']);
+        }
     }
     if(in_array($motion[$userType]['content_int'],$_SESSION['userLogin']['duty_list']))$owner=true;
     $currentStep = current($motion)['step'];
@@ -496,7 +572,7 @@ function getMotion($data){
         }
     }
 //    mylog($owner.','.$cooper);
-    $canCoop=$currentStep==0&&!$owner&&!cooper&&!$_SESSION['userLogin']['is_admin'];
+    $canCoop=$currentStep==0&&!$owner&&!$cooper&&!$_SESSION['userLogin']['is_admin'];
     include 'view/motion_inf.html.php';
     return;
 }
@@ -571,6 +647,44 @@ function updateAttr($data)
     }
 
 
+}
+/**
+ * 返回搜索框
+ */
+function searchMotionView($data){
+
+    $where=array();
+//    mylog(getArrayInf($data));
+    $category=isset($data['category'])?$data['category']:1;
+    $where['category']=$category;
+    $meetingInf['category']=$where['category'];
+    if(isset($data['meeting'])){
+        $meetingName=pdoQuery('meeting_tbl',array('meeting_name'),array('meeting_id'=>$data['meeting']),'limit 1')->fetch()['meeting_name'];
+    }
+    $motion=array();
+    $query=pdoQuery('motion_attr_view',null,array('motion_template'=>$where['category']),null);
+    foreach ($query as $row) {
+        if($row['option'])$row['option']=json_decode($row['option'],true);
+        $motion[$row['attr_name']]=$row;
+        //获取领衔人信息
+//        if ('领衔人' == $row['attr_name'] || '提案人' == $row['attr_name']) {
+//            $query = pdoQuery('duty_view', null, array('duty_id' => $row['content_int']), 'limit 1')->fetch();
+//            $unitGroupInf = array('unit' => $query['user_unit_name'], 'group' => $query['user_group_name']);
+//        }
+    }
+    $userGroup=pdoQuery('user_group_tbl',['user_group_id','user_group_name'],['category'=>$category],null)->fetchAll();
+    $userUnit=pdoQuery('user_unit_tbl',['user_unit_id','user_unit_name'],['category'=>$category],null)->fetchAll();
+
+    include '/view/search2.html.php';
+    return;
+
+
+
+
+}
+function unsetCurrentMotion(){
+    unset($_SESSION['userLogin']['currentMotion']);
+    echo ajaxBack( 'ok');
 }
 
 function ajaxAddCoop($data){

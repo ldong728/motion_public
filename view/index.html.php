@@ -8,6 +8,8 @@
 <script type="text/javascript" src="js/edit_motion.js?v=<?php echo rand(10,1000)?>"></script>
 <script type="text/javascript" src="js/zx.js?v=<?php echo rand(10, 1000) ?>"></script>
 <script type="text/javascript" src="js/laydate.js"></script>
+<script src="js/search.js?v=<?php echo rand(1000, 9999) ?>"></script>
+
 <link rel="stylesheet" type="text/css" media="screen" href="css/main.css?v=<?php echo rand(1000, 9999) ?>">
 <header class="header">
     <div class="header-l"><img src="images/p<?php echo $_SESSION['userLogin']['category']?>.jpg" alt="logo"></div>
@@ -23,7 +25,7 @@
         <li id="li3"><a href="#">历届历次</a></li>
         <li id="li4"><a href="#"><?php echo $motion_type?>线索</a></li>
         <li class="li7"><a href="#">百件<?php echo $motion_type?>汇编</a></li>
-        <li class="li8"><a href="#">搜索</a></li>
+        <li class="li8"><a href="#" class="multiple-search">搜索</a></li>
         <li><a href="#">公告</a></li>
     </ul>
     <div class="nav-right">
@@ -261,7 +263,7 @@
                         <td><div class="nav-tab text-center">
                                 <input type="text" name="search" id="search-input">
                             </div></td>
-                        <td><button type="button" class="u-btn magin0" id="search-button">搜索</button></td>
+                        <td><button type="button" class="u-btn magin0 multiple-search" id="search-button">搜索</button></td>
                         <td></td>
                     </tr>
                     <tr>
@@ -319,5 +321,7 @@
 
 </body>
 
+
 <script type="text/javascript" src="js/getList.js?v=<?php echo rand(10, 1000) ?>"></script>
+
 </html>
