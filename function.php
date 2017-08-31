@@ -290,8 +290,13 @@ function ajaxMyMotionList($data){
         if ($singleRow) {
 
         }
+    $query=pdoQuery('displeasure_attr_tbl',['motion as motion_id'],null,'where date_add(update_time,INTERVAL 12 month)>now() group by motion');
+    $displeasureList=[];
+    foreach ($query as $row) {
+        $displeasureList[$row['motion_id']]=1;
+    }
         $motionIdLimit = isset($sortFilter['motion_id']) ? $sortFilter['motion_id'] : null;
-        echo ajaxBack(array('list' => $sortList, 'sort' => $sort, 'totalCount' => $totalNumber, 'motionIdLimit' => $motionIdLimit,'field' => $field));
+        echo ajaxBack(array('list' => $sortList, 'sort' => $sort, 'totalCount' => $totalNumber, 'motionIdLimit' => $motionIdLimit,'field' => $field,'displeasureList'=>$displeasureList));
 }
 /**
  * ajax获取目标表的内容
@@ -627,6 +632,10 @@ function updateAttr($data)
             }
             pdoInsert('attr_tbl', $value, 'update');
         }
+        if(!$canfoward){
+            displeasure($motionId);
+            $canfoward=true;
+        }
         //点击下一步的操作
         if ($isFoward > 0&&$canfoward) {
             $currentStep++;
@@ -690,4 +699,29 @@ function unsetCurrentMotion(){
 function ajaxAddCoop($data){
 
     echo ajaxBack('ok');
+}
+function displeasure($motion_id){
+    $isDisPleasure=pdoQuery('displeasure_attr_tbl',['motion'],['motion'=>$motion_id],'limit 1')->fetch();
+    if(!$isDisPleasure){
+        $query=pdoQuery('attr_tbl',null,['motion'=>$motion_id],null);
+        $query->setFetchMode(PDO::FETCH_ASSOC);
+        $attrInf=$query->fetchAll();
+        pdoBatchInsert('displeasure_attr_tbl',$attrInf,'ignore');
+        $query=pdoQuery('motion_handler_tbl',null,['motion'=>$motion_id],null);
+        $query->setFetchMode(PDO::FETCH_ASSOC);
+        $handlerInf=$query->fetchAll();
+        if($handlerInf)pdoBatchInsert('displeasure_motion_handler_tbl',$handlerInf,'ignore');
+        $status=array();
+        foreach ($attrInf as $row) {
+            if("大会期间"==$row['content']||"闭会期间"==$row['content'])$status=$row;
+        }
+        pdoUpdate('motion_tbl', array('step' => 5), array('motion_id' => $motion_id));
+        pdoUpdate('attr_tbl',['content'=>"重新办理"],['attr_id'=>$status['attr_id']],' limit 1');
+        pdoUpdate('motion_handler_tbl',['status'=>3],['motion'=>$motion_id,'status'=>9]);
+
+        mylog(getArrayInf($status));
+
+    }else{
+
+    }
 }

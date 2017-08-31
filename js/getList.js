@@ -133,18 +133,22 @@ function formatNormalData(back){
     var type=1==user.category?'领衔人':'提案人';
     var myCount=1+(page*count);
     var title=' <th>&nbsp;&nbsp;</th><th>案号</th><th>'+type+'</th><th>状态</th><th>环节</th><th>案由</th><th>主办单位</th><th>协办单位</th>';
+
     $('.list-title').html(title);
     $('.list-container').empty();
     var value=backHandle(back);
     var c=value.list;
+    var displeasureList=value.displeasureList
     $.each(value.sort,function(k,v){
+        var color=displeasureList[v]?'style="color:red"':'';
+        var displeasureStep=displeasureList[v]?'重办':false;
         if(v>0){
-            var content='<tr class="tr1 trr1 table-element">';
+            var content='<tr class="tr1 trr1 table-element" '+color+'>';
             content+='<td>'+(myCount++)+'</td>';
             content+='<td>'+(c[v]['案号']||'')+'</td>';
             content+='<td>'+(c[v][type]||'')+'</td>';
             content+='<td>'+(c[v]['状态']||'')+'</td>';
-            content+='<td>'+(c[v]['当前环节']||'')+'</td>';
+            content+='<td>'+(displeasureStep||c[v]['当前环节']||'')+'</td>';
             content+='<td style="cursor: pointer" class="motion-content" id="mot'+v+'">'+c[v]['案由']||''+'</td>';
             content+='<td>'+(c[v]['主办单位']||'')+'</td>';
             content+='<td>'+(c[v]['协办单位']||'')+'</td>';
