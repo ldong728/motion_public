@@ -14,6 +14,21 @@ if($config['server_status']>0){
     echo '网站维护中，请稍后重试,状态码：'.$config['server_status'];
     exit;
 }
+if(isset($_GET['suggestion'])){
+    $typeList=["工业经济","农林水利","财贸金融","道路交通","城建管理","环境保护","医药卫生","科技教育","文化体育","劳动人事","政法统战","其他"];
+    $isUpdated=0;
+    if(isset($_POST['suggestion_update'])){
+        $content=[['name'=>addslashes($_POST['name']),'tel'=>addslashes($_POST['tel']),'type'=>addslashes($_POST['type']),'content'=>addslashes($_POST['content']),'from_ip'=>$_SERVER['REMOTE_ADDR'],'status'=>0]];
+        pdoBatchInsert('suggestion_tbl',$content);
+        $isUpdated=1;
+        unset($_POST);
+        printView('suggestion','提案线索征集页');
+        exit;
+    }
+
+    printView('suggestion','提案线索征集页');
+    exit;
+}
 if(isset($_SESSION['userLogin'])){
 //    mylog(getArrayInf($_POST));
     //处理ajax

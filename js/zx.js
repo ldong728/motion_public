@@ -77,7 +77,7 @@ $(document).ready(function(){
         var id=$(this).attr('id').slice(3);
         ajaxPost('getMotion',{motion_id:id},function(data){
             //console.log(data);
-            $('.motion-info').html(data)
+            $('.motion-info').html(data);
             $('.popup4').show();
 
         });
