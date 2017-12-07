@@ -12,7 +12,6 @@ function userAuth($user,$psd,$category){
     $isAdmin=false;
     $dutyList=false;
     if(preg_match('/^\d{11}$/',$userId)){
-        mylog('match');
         $userInf=pdoQuery('user_tbl',null,array('user_phone'=>$userId),'limit 1')->fetch();
         if($userInf){
             mylog(getArrayInf($userInf));
@@ -445,8 +444,9 @@ function create_motion(){
     }
     pdoTransReady();
     try{
-        $motionid=pdoInsert('motion_tbl',array('motion_name'=>addslashes($_POST['motion-title']),'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf['url'],'step'=>$_POST['need-partner'],'duty'=>$_POST['duty']));
-        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$dutyMotionAttr,'attr_template'=>$dutyAttrTemp,'content_int'=>$_POST['duty']));
+        $duty=isset($_POST['duty'])?$_POST['duty']:$_SESSION['userLogin']['current_duty'];
+        $motionid=pdoInsert('motion_tbl',array('motion_name'=>addslashes($_POST['motion-title']),'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf['url'],'step'=>$_POST['need-partner'],'duty'=>$duty));
+        pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$dutyMotionAttr,'attr_template'=>$dutyAttrTemp,'content_int'=>$duty));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$attachmentMotionAttr,'attr_template'=>$attachmentAttrTemp,'attachment'=>$fileInf['url'],'content'=>addslashes($fileInf['originalName'])));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$propMotionAttr,'attr_template'=>$propAttrTemp,'content'=>$_POST['property']));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$titleMotionAttr,'attr_template'=>$titleAttrTemp,'content'=>addslashes($_POST['motion-title'])));
@@ -581,6 +581,16 @@ function getMotion($data){
     include 'view/motion_inf.html.php';
     return;
 }
+function getSuggestion(){
+    $query=pdoQuery('suggestion_tbl',['suggestion_id','name','tel','type','update_time'],['status'=>1],'limit 100')->fetchAll();
+    echo ajaxBack($query);
+}
+function getSuggestionDetail($data){
+    $id=$data['id'];
+    $content=pdoQuery('suggestion_tbl',['content'],['suggestion_id'=>$id],'limit 1')->fetch()['content'];
+    echo ajaxBack($content);
+
+}
 
 /**
  * 解析motion_view中获取的数据，将索引或时间戳转换成可显示的值
@@ -644,7 +654,6 @@ function updateAttr($data)
 
         }
 
-        mylog('ok');
         pdoCommit();
         echo ajaxBack(array('step' => $currentStep, 'id' => $motionId));
     } catch (PDOException $e) {

@@ -31,7 +31,6 @@ if(isset($_GET['suggestion'])){
 }
 if(isset($_SESSION['userLogin'])){
 //    mylog(getArrayInf($_POST));
-    //处理ajax
     $userInf=$_SESSION['userLogin'];
     if(isset($_POST['ajax'])){
         $ajaxData=isset($_POST['ajax_data'])?$_POST['ajax_data']:null;
@@ -39,36 +38,12 @@ if(isset($_SESSION['userLogin'])){
         exit;
     }
     if(isset($_POST['post_method'])){
-//        echo getArrayInf($_POST);
-//        echo getArrayInf($_FILES);
-//        echo "ok";
+
         $_POST['post_method']();
         getIndex();
-//        unset($_POST['post_method']);
         exit;
     }
-//    if(isset($_GET['get_meeting'])){
-//        getMeetingView($_GET['get_meeting']);
-//        exit;
-//    }
-//    if(isset($_GET['statistics_excel_out'])){
-//        $totalList= handleStatistics(0, $_SESSION['userLogin']['category']);
-//        include"view/statisticsOutExcel.html.php";
-////        include"view/statistics_document.html.php";
-//        exit;
-//    }
-//    if(isset($_GET['download'])){
-//        include_once "downLoad.php";
-//        $_GET['download']();
-//    }
-//    if(isset($_FILES)){
-//        if(isset($_POST['file_type'])&&'excel'==$_POST['file_type']){
-//            encodeExcel();
-//        }
-//
-//    }
-//    echo(getArrayInf($_SESSION));
-//    mylog('index');
+
    getIndex();
 }else{
     if(isset($_POST['user'])&&isset($_POST['password'])&&isset($_POST['category'])){

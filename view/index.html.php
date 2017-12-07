@@ -23,7 +23,7 @@
         <li id="li1"><a href="#">我要提<?php echo $motion_type?></a></li>
         <li id="li2"><a href="#">个人信息</a></li>
         <li id="li3"><a href="#">历届历次</a></li>
-        <li id="li4"><a href="#"><?php echo $motion_type?>线索</a></li>
+        <?php if(2==$motion_type):?><li id="li4"><a href="#"><?php echo $motion_type?>线索</a></li><?php endif ?>
         <li class="li7"><a href="#">百件<?php echo $motion_type?>汇编</a></li>
         <li class="li8"><a href="#" class="multiple-search">搜索</a></li>
         <li><a href="#">公告</a></li>
@@ -317,11 +317,23 @@
         </h2>
     </div>
 </div>
+<div class="popup popup5" style="display: none">
+    <div class="mask"></div>
+    <div class="motion-container">
+        <h2 class="title-h2">提案线索详情<i class="icon icon-close close-popup"></i>
+
+            <div class="popup-table suggestion-detail" style="height: 380px;overflow: auto; margin-top: 5px">
+
+            </div>
+        </h2>
+    </div>
+</div>
 
 
 </body>
 
 
 <script type="text/javascript" src="js/getList.js?v=<?php echo rand(10, 1000) ?>"></script>
+<script type="text/javascript" src="js/suggestion.js?v=<?php echo rand(10, 1000) ?>"></script>
 
 </html>
