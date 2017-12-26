@@ -85,7 +85,7 @@
 <?php if($canCoop):?>
     <tr>
         <td></td>
-        <td><button class="add-coop">我要附议</button></td>
+        <td><button class="add-coop" data-id="<?=$id ?>">我要附议</button></td>
         </tr>
 <?php endif ?>
 <tr>

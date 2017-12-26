@@ -32,7 +32,7 @@ function userAuth($user,$psd,$category){
                 $isAdmin=true;
                 $_SESSION['userLogin']['is_admin']=true;
                 $_SESSION['userLogin']['user_name']=$staffInf['full_name'];
-                $dutyList=pdoQuery('duty_view',null,json_decode($staffInf['user_admin'],true),'order by meeting asc');
+                $dutyList=pdoQuery('duty_view',null,json_decode($staffInf['user_admin'],true),'order by meeting desc');
             }else{
                 return false;
             }
@@ -45,7 +45,7 @@ function userAuth($user,$psd,$category){
                     if($admin_type['admin_type']){
                         $isAdmin=true;
                         $_SESSION['userLogin']['is_admin']=true;
-                        $dutyList=pdoQuery('duty_view',null,json_decode($admin_type['admin_type'],true),'order by meeting asc');
+                        $dutyList=pdoQuery('duty_view',null,json_decode($admin_type['admin_type'],true),'order by meeting desc');
                     }else{
                         $dutyList=pdoQuery('duty_view',null,array('user'=>$userInf['user_id'],'category'=>$category),'limit 10')->fetchAll();
                     }
@@ -64,7 +64,7 @@ function userAuth($user,$psd,$category){
         $now=time();
         foreach ($dutyList as $row) {
             $_SESSION['userLogin']['duty_list'][$row['duty_id']]=$row['duty_id'];
-            if($row['deadline_time']-$now<0){
+            if($row['deadline_time']>$now){
                 if(!$isAdmin){
                     $_SESSION['userLogin']['current_duty']=$row['duty_id'];
                     $_SESSION['userLogin']['user_unit']=$row['user_unit_name'];
@@ -73,14 +73,13 @@ function userAuth($user,$psd,$category){
                 $_SESSION['userLogin']['status']=time()<$row['end_time']?'大会期间':'闭会期间';
                 $_SESSION['userLogin']['meeting']=$row['meeting'];
                 $_SESSION['userLogin']['meeting_name']=$row['meeting_name'];
-
-
             }else{
 //                $_SESSION['userLogin']['current_duty']=0;
             }
         }
 //        $_SESSION['user']
     }
+    mylog(json_encode($_SESSION));
     return true;
 }
 function getIndex(){
@@ -403,12 +402,13 @@ function create_motion(){
     if(isset($_SESSION['userLogin']['create_mark'])&&$_SESSION['userLogin']['create_mark']==$_POST['motion-title'])return;//防止刷新重复提交
     $_SESSION['userLogin']['create_mark']=$_POST['motion-title'];
     include_once 'includes/upload.class.php';
-    mylog(getArrayInf($_POST));
+//    mylog(getArrayInf($_POST));
 //    return;
     if(isset($_FILES['attachment-file'])&&$_FILES['attachment-file']['tmp_name']){
         $uploader=new uploader();
         $uploader->upFile(md5_file($_FILES['attachment-file']['tmp_name']));
         $fileInf=$uploader->getFileInfo();
+        mylog(getArrayInf($fileInf));
         file_put_contents($GLOBALS['mypath'].'/original_'.$fileInf['url'], file_get_contents($GLOBALS['mypath'].'/'.$fileInf['url']));
         mylog(getArrayInf($fileInf));
 
@@ -577,7 +577,7 @@ function getMotion($data){
         }
     }
 //    mylog($owner.','.$cooper);
-    $canCoop=$currentStep==0&&!$owner&&!$cooper&&!$_SESSION['userLogin']['is_admin'];
+    $canCoop=$currentStep==0&&!$owner&&!$cooper&&!isset($_SESSION['userLogin']['is_admin']);
     include 'view/motion_inf.html.php';
     return;
 }
@@ -706,8 +706,24 @@ function unsetCurrentMotion(){
 }
 
 function ajaxAddCoop($data){
+    if(1==$_SESSION['userLogin']['category']){
+        $motionAttr=7;
+        $attrTemplate=5;
+    }else{
+        $motionAttr=14;
+        $attrTemplate=5;
+    }
+    $motionId=$data['motion'];
+    $duty=$data['duty'];
+    $inf=pdoQuery('attr_tbl',['attr_id'],['motion'=>$motionId,'motion_attr'=>$motionAttr,'attr_template'=>$attrTemplate,'content_int'=>$duty],'limit 1')->fetch();
+    if($inf){
+        $attr_id=$inf['attr_id'];
+    }else{
+        $attr_id=pdoInsert('attr_tbl',['motion'=>$motionId,'motion_attr'=>$motionAttr,'attr_template'=>$attrTemplate,'content_int'=>$duty],'ignore');
+    }
 
-    echo ajaxBack('ok');
+
+    echo ajaxBack($attr_id);
 }
 function displeasure($motion_id){
     $isDisPleasure=pdoQuery('displeasure_attr_tbl',['motion'],['motion'=>$motion_id],'limit 1')->fetch();

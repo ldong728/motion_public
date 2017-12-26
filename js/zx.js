@@ -82,10 +82,15 @@ $(document).ready(function(){
 
         });
     });
-    $(document).on('click','add-coop',function(){
-        ajaxPost('ajaxAddCoop',{duty:user.currrent_duty},function(){
+    $(document).on('click','.add-coop',function(){
+        if(confirm('确认附议此件？')){
+            var motionId=$(this).data('id');
+            console.log(user);
+            ajaxPost('ajaxAddCoop',{motion:motionId,duty:user.current_duty},function(data){
+                alert('附议成功');
+            });
+        }
 
-        });
     });
 
 	

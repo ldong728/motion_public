@@ -20,10 +20,12 @@
 </header>
 <nav class="home-nav">
     <ul class="clearfix">
+        <?php if(isset($_SESSION['userLogin']['meeting'])):?>
         <li id="li1"><a href="#">我要提<?php echo $motion_type?></a></li>
+        <?php endif ?>
         <li id="li2"><a href="#">个人信息</a></li>
         <li id="li3"><a href="#">历届历次</a></li>
-        <?php if(2==$motion_type):?><li id="li4"><a href="#"><?php echo $motion_type?>线索</a></li><?php endif ?>
+        <?php if("提案"==$motion_type):?><li id="li4"><a href="#"><?php echo $motion_type?>线索</a></li><?php endif ?>
         <li class="li7"><a href="#">百件<?php echo $motion_type?>汇编</a></li>
         <li class="li8"><a href="#" class="multiple-search">搜索</a></li>
         <li><a href="#">公告</a></li>
@@ -133,7 +135,8 @@
                         <td>性质</td>
                         <td><input type="radio" name="property" value="当年" checked>当年&nbsp;<input type="radio" name="property" value="多年重复" <?php if(1==$_SESSION['userLogin']['category']) echo 'disabled="disabled"' ?>>多年重复</td>
                     </tr>
-                    <?php endif?>
+
+
                     <tr>
                         <td>附议期限</td>
                         <td><input type="text" id="date-selector" disabled>
@@ -150,6 +153,7 @@
                             </button>
                         </td>
                     </tr>
+                    <?php endif?>
                     <tr>
                         <td>案由<br><span class="red">（<?php echo $motion_type?>题目）</span></td>
                         <td colspan="3"><input type="text" name="motion-title" class="input-lon" maxlength="150"></td>
@@ -166,7 +170,9 @@
         <div class="refer">
             <button type="button" class="close-popup" value="返回">返回</button>
             <button type="button" value="提交" class="submit">立即提交</button>
+            <?php if(2==$_SESSION['userLogin']['category']):?>
             <button type="button" class="submit get-partner">征集附议</button>
+            <?php endif ?>
         </div>
         <div class="mo-footer">
             <?php if(2==$_SESSION['userLogin']['category']):?>
@@ -175,8 +181,6 @@
             <p class="red">征集附议： 其他委员将会附议您提出的提案</p>
             <?php else:?>
                 <p class="red">立即提交： 将您提出的建议/议案将提交到人大代工委</p>
-
-                <p class="red">征集附议： 其他代表将会附议您提出的建议/议案</p>
             <?php endif?>
         </div>
     </div>
@@ -276,7 +280,7 @@
                                             <input class="checkbox candidate super li-btn-all" type="checkbox" name="checkbox-lv1"
                                                    value="778">
                                             <button class="btn-2 li-btn-all b-sec" type="button"></button>
-                                            <span class="span-1 candidate-name">农业农村组联络委农业农村组联络委农业农村组联络委农业农村组联络委农业农村组联络委</span></li>
+                                            <span class="span-1 candidate-name"></span></li>
                                         <li class="li-2">
                                             <ul>
                                                 <li class="li-lv2 main-candidate clearfix">
@@ -285,7 +289,7 @@
                                                            name="checkbox-lv2"
                                                            value="23">
                                                     <button class="btn-lv2-2 li-btn-all b-sec" type="button"></button>
-                                                    <span class="span-1 candidate-name">毛玲洁</span></li>
+                                                    <span class="span-1 candidate-name"></span></li>
 
                                             </ul>
                                         </li>
