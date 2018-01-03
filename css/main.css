@@ -126,6 +126,10 @@ input[type=text].input-lon{width: 80%!important;}
 .li-1{height: 25px;line-height: 25px;overflow: hidden;white-space: normal;text-overflow: clip;}
 .nav-tab ul ul{padding-left: 17px;margin-bottom: 10px;}
 
+.pre-delete{
+    margin-left: 5px;
+}
+
 
 
 

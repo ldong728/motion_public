@@ -309,7 +309,7 @@ function ajaxTargetList($data)
     $backList = array();
     switch ($target) {
         case 'duty':
-            $filter = array('category' => $_SESSION['userLogin']['category'], 'activity' => 1);
+            $filter = array('category' => $_SESSION['userLogin']['category'], 'activity' => 1,'meeting'=>$_SESSION['userLogin']['meeting']);
             if (isset($_SESSION['userLogin']['duty_list'])) $filter = array_merge($filter, array('duty_id'=>$_SESSION['userLogin']['duty_list']), array('category' => $_SESSION['userLogin']['category'], 'activity' => 1));
             $dutyQuery = pdoQuery('duty_view', null, $filter, null);
 
@@ -408,9 +408,9 @@ function create_motion(){
         $uploader=new uploader();
         $uploader->upFile(md5_file($_FILES['attachment-file']['tmp_name']));
         $fileInf=$uploader->getFileInfo();
-        mylog(getArrayInf($fileInf));
+//        mylog(getArrayInf($fileInf));
         file_put_contents($GLOBALS['mypath'].'/original_'.$fileInf['url'], file_get_contents($GLOBALS['mypath'].'/'.$fileInf['url']));
-        mylog(getArrayInf($fileInf));
+//        mylog(getArrayInf($fileInf));
 
     }else{
         return;
@@ -418,6 +418,7 @@ function create_motion(){
     $category=$_SESSION['userLogin']['category'];
     $motionTemplate=$category;
     if(1==$category){
+        $step=2;
         $dutyMotionAttr=6;
         $dutyAttrTemp=4;
         $attachmentMotionAttr=31;
@@ -429,8 +430,12 @@ function create_motion(){
         $titleMotionAttr=61;
         $titleAttrTemp=3;
         $_POST['property']='当年';
-
+        $coopDutyMotionAttr=7;
+        $coopDutyAttrTemp=5;
+        $motionTypeMotionAttr=90;
+        $motionTypeAttrTemplate=47;
     }else{
+        $step=$_POST['need-partner'];
         $dutyMotionAttr=84;
         $dutyAttrTemp=43;
         $attachmentMotionAttr=21;
@@ -441,16 +446,39 @@ function create_motion(){
         $statusAttrTemp=8;
         $titleMotionAttr=36;
         $titleAttrTemp=3;
+        $coopDutyMotionAttr=14;
+        $coopDutyAttrTemp=5;
     }
+        if(isset($_POST['duty']))$duty=$_POST['duty'];
+        elseif(isset($_SESSION['userLogin']['current_duty']))$duty=$_SESSION['userLogin']['current_duty'];
+        else return;
+//        mylog(getArrayInf($_POST));
+//        return;
     pdoTransReady();
     try{
-        $duty=isset($_POST['duty'])?$_POST['duty']:$_SESSION['userLogin']['current_duty'];
-        $motionid=pdoInsert('motion_tbl',array('motion_name'=>addslashes($_POST['motion-title']),'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf['url'],'step'=>$_POST['need-partner'],'duty'=>$duty));
+        $motionid=pdoInsert('motion_tbl',array('motion_name'=>addslashes($_POST['motion-title']),'meeting'=>$_SESSION['userLogin']['meeting'],'category'=>$_SESSION['userLogin']['category'],'motion_template'=>$motionTemplate,'document_sha'=>$fileInf['url'],'step'=>$step,'duty'=>$duty));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$dutyMotionAttr,'attr_template'=>$dutyAttrTemp,'content_int'=>$duty));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$attachmentMotionAttr,'attr_template'=>$attachmentAttrTemp,'attachment'=>$fileInf['url'],'content'=>addslashes($fileInf['originalName'])));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$propMotionAttr,'attr_template'=>$propAttrTemp,'content'=>$_POST['property']));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$titleMotionAttr,'attr_template'=>$titleAttrTemp,'content'=>addslashes($_POST['motion-title'])));
         pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$statusMotionAttr,'attr_template'=>$statusAttrTemp,'content'=>$_POST['status']));
+        if(1==$category)pdoInsert('attr_tbl',array('motion'=>$motionid,'motion_attr'=>$motionTypeMotionAttr,'attr_template'=>$motionTypeAttrTemplate,'content'=>$_POST['motion_type']));
+        if(isset($_POST['dutycoop'])){
+            mylog(getArrayInf($_POST['dutycoop']));
+            $value=[];
+            if(is_array($_POST['dutycoop'])){
+                foreach ($_POST['dutycoop'] as $dutyId) {
+                    $value[]=['motion'=>$motionid,'motion_attr'=>$coopDutyMotionAttr,'attr_template'=>$coopDutyAttrTemp,'content_int'=>$dutyId];
+                }
+            }else{
+                $value[]=['motion'=>$motionid,'motion_attr'=>$coopDutyMotionAttr,'attr_template'=>$coopDutyAttrTemp,'content_int'=>$_POST['dutycoop']];
+            }
+
+            pdoBatchInsert('attr_tbl',$value);
+
+        }
+
+
         if(0==$_POST['need-partner']&&isset($_POST['date'])){
             mylog('need_coop');
             $preCoopStatus=time()>$_POST['date']?0:1;
@@ -459,6 +487,7 @@ function create_motion(){
         if (2 == $_SESSION['userLogin']['category']) {
             pdoInsert('zx_motion_tbl', array('motion' => $motionid));
         }
+
 
         pdoCommit();
     }catch(PDOException $e){

@@ -103,19 +103,12 @@ $(document).on('click', '.target-select', function () {
     var f = _.parent();
     var target = _.data('target');
     var multiple = _.data('multiple');
+    var dutyType = _.data('dutytype')? _.data('dutytype'):'';
     var selecterName = f.prev('th').text();
     var existValue = [];
     f.addClass('target-value-selecter');
-    //$.each(f.find('.pre-delete'), function (k, v) {
-    //    var id = $(v).prev('.added-value').val();
-    //    var attrId = $(v).attr('id');
-    //    existValue.push({id: id, name: $(v).text(), attrId: attrId});
-    //});
-
     getTargetList(target, null, function (back) {
         var listData = backHandle(back);
-        //console.log($(listData).length);
-        //console.log(listData);
         $('.selecter-content').empty();
         var listContent = '';
         var chosenContent = '';
@@ -151,8 +144,6 @@ $(document).on('click', '.target-select', function () {
             listContent += v1.list ? '</div>' : '';
 
         });
-        //listContent+='';
-        //console.log(listContent);
         $('.selecter-content').append(listContent);
         //填充已选项
         $('.target-chosen-ul').empty();
@@ -166,6 +157,7 @@ $(document).on('click', '.target-select', function () {
         //});
         //$('.target-chosen-ul').append(chosenContent);
         $('.multiple-type').val(multiple);
+        $('.duty-type').val(dutyType);
         $('.target-name').text('请选择' + selecterName);
         $('.popup3').show();
     });
@@ -273,9 +265,11 @@ $(document).on('click', '.chosen-confirm', function () {
     var content = '';
     var valuePlace = $('.target-value-selecter');
     var multiple = $('.multiple-type').val();
+    var dutyType = $('.duty-type').val();
+    console.log(dutyType);
     var selectButton=valuePlace.children('.target-select');
     var target=selectButton.data('target');
-    target=$('input.exist').length>1?target+'[]':target;
+    target=$('input.exist').length>1?target+dutyType+'[]':target+dutyType;
     selectButton.prevAll().remove();
         $.each($('input.exist'), function (k, v) {
             var _ = $(v);

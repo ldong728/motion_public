@@ -6,7 +6,7 @@ var category=user.category;
 var orderby=2==user.category?'编号':'案号';
 var order=true;
 var page=0;
-var filter={};
+var filter={meeting:1};
 var count=20;
 var motionIdLimit=null;
 //resizeWindow();
@@ -24,15 +24,19 @@ $('.motion-filter').click(function(){
     switch(filterType){
         case 'coop':
             filter={key_word:'附议人'};
+            $('.current-position').text('我附议的');
             break;
         case 'preCoop':
             filter={preCoop:1};
+            $('.current-position').text('征集附议的');
             break;
         case 'meeting':
+            $('.current-position').text('本届');
             console.log('meeting');
             filter={meeting:1};
             break;
         default :
+            $('.current-position').text('我的');
             filter={};
     }
     reflashList(orderby,page,order);
