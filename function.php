@@ -452,6 +452,7 @@ function create_motion(){
         if(isset($_POST['duty']))$duty=$_POST['duty'];
         elseif(isset($_SESSION['userLogin']['current_duty']))$duty=$_SESSION['userLogin']['current_duty'];
         else return;
+        $dutyInf=pdoQuery('duty_tbl',null,['duty_id'=>$duty],'limit 1')->fetch();
 //        mylog(getArrayInf($_POST));
 //        return;
     pdoTransReady();
@@ -485,7 +486,14 @@ function create_motion(){
             pdoInsert('pre_coop_tbl',array('category'=>$_SESSION['userLogin']['category'],'motion_id'=>$motionid,'status'=>$preCoopStatus,'end_time'=>$_POST['date']));
         }
         if (2 == $_SESSION['userLogin']['category']) {
-            pdoInsert('zx_motion_tbl', array('motion' => $motionid));
+
+            $zx_id=pdoInsert('zx_motion_tbl', array('motion' => $motionid));
+            pdoInsert('attr_tbl',['motion'=>$motionid,'motion_attr'=>92,'attr_template'=>49,'content_int'=>$zx_id,]);
+
+            if(0==$dutyInf['user_unit']||0==$dutyInf['user_group']){
+                pdoInsert('attr_tbl',['motion'=>$motionid,'motion_attr'=>25,'attr_template'=>16,'content'=>'党派团体',]);
+            }
+
         }
 
 

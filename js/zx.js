@@ -25,10 +25,18 @@ $(document).ready(function(){
 	
 	$(document).on('click','#li1',function(){
         console.log(user);
+        if(mainDisable){
+            alert('当前浏览器版本不支持此功能，请使用最新版IE，火狐，或者谷歌浏览器；或者将360浏览器调至“极速模式”');
+            return;
+        }
 
 		$('.popup1').show();
 	});
 	$(document).on('click','#li2',function(){
+        if(mainDisable){
+            alert('当前浏览器版本不支持此功能，请使用最新版IE，火狐，或者谷歌浏览器；或者将360浏览器调至“极速模式”');
+            return;
+        }
 		$('.popup2').show();
 	});
 	$(document).on('click','.mask',function(){
@@ -40,6 +48,10 @@ $(document).ready(function(){
         $('.popup').hide();
     });
     $(document).on('click','.submit',function(){
+        if(mainDisable){
+            alert('当前浏览器版本不支持此功能，请使用最新版IE，火狐，或者谷歌浏览器；或者将360浏览器调至“极速模式”');
+            return;
+        }
         var error=false;
         $('.create-form').find('input').each(function(k,v){
             if('motion-title'==$(v).attr('name')&&!$.trim($(v).val()))error='案由不能为空';
