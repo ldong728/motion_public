@@ -269,11 +269,19 @@
     </tr>
     <?php else: ?>
         <tr>
-            <td>面商形式</td>
-            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['面商形式'], JSON_UNESCAPED_UNICODE) ?></span>
+            <td>面商人</td>
+            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['面商人1'], JSON_UNESCAPED_UNICODE) ?></span>
             </td>
-            <td>采纳情况</td>
-            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['采纳情况'], JSON_UNESCAPED_UNICODE) ?></span>
+            <td>协商形式</td>
+            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['协商形式1'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+        </tr>
+        <tr>
+            <td>问题解决情况</td>
+            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['问题解决情况1'], JSON_UNESCAPED_UNICODE) ?></span>
+            </td>
+            <td>意见采纳情况</td>
+            <td colspan="2" class="verify-value"><span class="encoded-data"><?php echo json_encode($motion['意见采纳情况1'], JSON_UNESCAPED_UNICODE) ?></span>
             </td>
         </tr>
         <tr>
@@ -303,6 +311,15 @@
         <td>操作</td>
         <td colspan="5"><button class="submit-attr">提交</button></td>
     </tr>
+<?php endif?>
+<?php if(1==$meetingInf['category']):?>
+<tr>
+    <td>
+    </td>
+    <td colspan="5">
+        <a href="download.php?category=1&content=cover&motion=" style="color: red">点此下载封面</a>
+    </td>
+</tr>
 <?php endif?>
 </tbody>
 </table>

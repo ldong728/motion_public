@@ -177,6 +177,7 @@
 <!--            class="encoded-search-data verify-value">--><?php //echo json_encode($motion['主办签发人'], JSON_UNESCAPED_UNICODE) ?><!--</span>-->
 <!--    </td>-->
 <!--</tr>-->
+<?php if(2==$meetingInf['category']):?>
 <tr>
     <th rowspan="2" style="border-right: 1px solid #f08300">反馈意见</th>
     <th>办理工作</th>
@@ -199,6 +200,10 @@
     <td><span class="encoded-search-data"><?php echo json_encode($motion['落实情况'], JSON_UNESCAPED_UNICODE) ?></span>
     </td>
 </tr>
+<?php else: ?>
+
+
+<?php endif ?>
 
 
 
