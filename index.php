@@ -71,6 +71,8 @@ if(isset($_SESSION['userLogin'])){
                 break;
             case 2:
                $title='政协登入-慈溪市政协提案办理系统';
+                echo '外网提交入口已关闭，请联系管理员';
+                exit;
                 break;
 
         }

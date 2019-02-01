@@ -12,8 +12,8 @@
                 reflashList(orderby,page,order);
             })
         }
-
     });
+
     $(document).on('click', '.save-attr', function () {
         submitAtrrs(0, function (data) {
             //if('meeting'==place){
